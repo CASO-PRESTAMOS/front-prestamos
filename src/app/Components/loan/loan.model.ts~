@@ -1,13 +1,13 @@
 export interface Loan {
-  loanId: number;
+  loanId?: number;
   clientName: string;
   clientDNI: string;
   clientAddress: string;
   amount: number;
   duration: number;
-  interestRate: number;
-  totalAmount: number;
-  startDate: Date;
-  expireDate: Date;
-  status: string;
+  interestRate?: number;
+  totalAmount?: number;
+  startDate?: string;
+  expireDate?: string;
+  status?: string;
 }

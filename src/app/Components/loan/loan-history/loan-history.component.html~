@@ -1,0 +1,37 @@
+<!-- loan-history.component.html -->
+<div class="container mx-auto my-8">
+  <h2 class="text-2xl font-bold mb-4">Historial Completo de Préstamos</h2>
+
+  <table class="min-w-full bg-white">
+    <thead class="bg-gray-800 text-white">
+    <tr>
+      <th class="w-1/5 py-2">Cliente</th>
+      <th class="w-1/5 py-2">Monto</th>
+      <th class="w-1/5 py-2">Monto Total</th>
+      <th class="w-1/5 py-2">Fecha de Inicio</th>
+      <th class="w-1/5 py-2">Fecha de Vencimiento</th>
+      <th class="w-1/5 py-2">Duración</th>
+      <th class="w-1/5 py-2">Estado</th>
+    </tr>
+    </thead>
+    <tbody class="text-gray-700">
+    <tr *ngFor="let loan of loans">
+      <td class="py-2">{{ loan.clientName }}</td>
+      <td class="py-2">{{ loan.amount }}</td>
+      <td class="py-2">{{ loan.totalAmount }}</td>
+      <td class="py-2">{{ loan.startDate | date: 'mediumDate' }}</td>
+      <td class="py-2">{{ loan.expireDate | date: 'mediumDate' }}</td>
+      <td class="py-2">{{ loan.duration }} meses</td>
+      <td class="py-2">{{ loan.status }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="mt-6 text-center">
+    <button
+      (click)="goBack()"
+      class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+      Volver al Dashboard
+    </button>
+  </div>
+</div>

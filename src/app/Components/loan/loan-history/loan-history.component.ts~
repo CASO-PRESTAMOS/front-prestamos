@@ -33,9 +33,4 @@ export class LoanHistoryComponent implements OnInit {
       }
     );
   }
-
-  goBack(): void {
-    // Aquí navegamos de regreso al dashboard
-    window.history.back();
-  }
 }
