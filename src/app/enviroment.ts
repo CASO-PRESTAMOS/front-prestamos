@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'back-prestamos-production.up.railway.app/api'
+  apiUrl: 'https://back-prestamos-production.up.railway.app/api'
 };
