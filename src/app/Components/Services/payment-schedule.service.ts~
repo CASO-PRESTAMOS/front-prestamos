@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import {environment} from "../../enviroment";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Observable} from "rxjs";
+import {PaymentSchedule} from "../Sechedule/payment-schedule.model";
+@Injectable({
+  providedIn: 'root'
+})
+export class PaymentScheduleService {
+
+  private apiUrl = `${environment.apiUrl}/admin/payment-schedule`;
+
+  constructor(private http: HttpClient) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');  // Obtener el token del almacenamiento local
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  getAllPaymentSchedules(): Observable<PaymentSchedule[]> {
+    return this.http.get<PaymentSchedule[]>(`${this.apiUrl}`, { headers: this.getAuthHeaders() });
+  }
+
+  generatePaymentSchedules(): Observable<PaymentSchedule[]> {
+    return this.http.get<PaymentSchedule[]>(`${this.apiUrl}/generate`, { headers: this.getAuthHeaders() });
+  }
+
+  markPaymentAsCompleted(paymentId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/mark-completed/${paymentId}`, {}, { headers: this.getAuthHeaders() });
+  }
+}

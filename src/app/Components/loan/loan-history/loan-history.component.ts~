@@ -1,0 +1,36 @@
+import { Component,OnInit } from '@angular/core';
+import {LoanService} from "../../Services/loan.service";
+import {Loan} from "../loan.model";
+import {DatePipe, NgForOf, NgIf} from "@angular/common";
+
+@Component({
+  selector: 'app-loan-history',
+  standalone: true,
+  imports: [
+    NgForOf,
+    NgIf,
+    DatePipe
+  ],
+  templateUrl: './loan-history.component.html',
+  styleUrl: './loan-history.component.css'
+})
+export class LoanHistoryComponent implements OnInit {
+  loans: Loan[] = [];
+
+  constructor(private loanService: LoanService) {}
+
+  ngOnInit(): void {
+    this.loadLoans();
+  }
+
+  loadLoans(): void {
+    this.loanService.getAllLoans().subscribe(
+      (loans) => {
+        this.loans = loans;
+      },
+      (error) => {
+        console.error('Error al cargar el historial de préstamos', error);
+      }
+    );
+  }
+}

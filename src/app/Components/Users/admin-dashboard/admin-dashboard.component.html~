@@ -1,0 +1,83 @@
+<div class="container mx-auto my-8 p-4">
+  <h2 class="text-3xl font-bold mb-6 text-center">Bienvenido Administrador</h2>
+
+  <!-- Sección de botones -->
+  <div class="flex justify-around mb-8">
+    <button
+      (click)="navigateToLoanRegistration()"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+    >
+      Registrar Nuevo Préstamo
+    </button>
+
+    <button
+      (click)="generatePaymentSchedule()"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+    >
+      Generar Cronograma de Pagos
+    </button>
+  </div>
+
+  <!-- Mensajes de éxito o error -->
+  <div class="text-center">
+    <p *ngIf="successMessage" class="text-green-500 text-center mb-4">{{ successMessage }}</p>
+    <p *ngIf="errorMessage" class="text-red-500 text-center mb-4">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Sección de préstamos recientes -->
+  <div class="mb-8">
+    <h3 class="text-xl font-semibold mb-4">Últimos Préstamos</h3>
+    <div *ngFor="let loan of recentLoans" class="p-4 bg-white shadow rounded mb-4">
+      <p><strong>Cliente:</strong> {{ loan.clientName }}</p>
+      <p><strong>Monto:</strong> {{ loan.amount }}</p>
+      <p><strong>Fecha de inicio:</strong> {{ loan.startDate | date: 'mediumDate' }}</p>
+    </div>
+  </div>
+
+  <!-- Sección de cronograma de pagos -->
+  <div class="mb-8">
+    <h3 class="text-xl font-semibold mb-4">Cronograma de Pagos Generado</h3>
+    <table class="min-w-full bg-white">
+      <thead>
+      <tr>
+        <th class="px-4 py-2">Cliente</th>
+        <th class="px-4 py-2">Fecha de Pago</th>
+        <th class="px-4 py-2">Monto</th>
+        <th class="px-4 py-2">Estado</th>
+        <th class="px-4 py-2">Acción</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let schedule of paymentSchedules">
+        <td class="border px-4 py-2">{{ schedule.loan.clientName }}</td>
+        <td class="border px-4 py-2">{{ schedule.paymentDueDate | date }}</td>
+        <td class="border px-4 py-2">{{ schedule.installmentAmount | currency }}</td>
+        <td class="border px-4 py-2">
+            <span [ngClass]="schedule.paid ? 'text-green-500' : 'text-red-500'">
+              {{ schedule.paid ? 'Pagado' : 'Pendiente' }}
+            </span>
+        </td>
+        <td class="border px-4 py-2">
+          <button
+            *ngIf="!schedule.paid"
+            (click)="markAsCompleted(schedule.id)"
+            class="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Marcar como Pagado
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Botón para ver historial completo -->
+  <div class="text-center">
+    <button
+      (click)="navigateToLoanHistory()"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+    >
+      Ver Historial Completo
+    </button>
+  </div>
+</div>
