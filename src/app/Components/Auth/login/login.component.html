@@ -1,13 +1,16 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
   <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <h2 class="text-xl font-bold mb-6 text-center">Iniciar Sesión</h2>
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-      <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Correo</label>
-      <input id="email" formControlName="email" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-100" type="email" placeholder="correo123@tucorreo.com">
+      <label for="username" class="block mb-2 text-sm font-medium text-gray-700">Usuario</label>
+      <input id="username" formControlName="username" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-100" placeholder="TuUsuario" />
 
       <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Contraseña</label>
-      <input id="password" formControlName="password" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-100" type="password" placeholder="tupassword1234">
+      <input id="password" formControlName="password" type="password" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-100" placeholder="Contraseña123" />
 
-      <button type="submit" class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none">Iniciar Sesión</button>
+      <button type="submit" class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-200">
+        Iniciar Sesión
+      </button>
     </form>
   </div>
 </div>
