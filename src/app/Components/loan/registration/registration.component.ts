@@ -1,54 +1,76 @@
-import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { LoanService} from "../../Services/loan.service";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { LoanService } from '../../Services/loan.service';
 import {Router} from "@angular/router";
-import {NgIf} from "@angular/common";
-
 
 @Component({
   selector: 'app-registration',
-  standalone: true,
-  imports: [ReactiveFormsModule, NgIf],
+  standalone: true, // Marca como standalone
+  imports: [CommonModule, ReactiveFormsModule], // Importa ReactiveFormsModule
   templateUrl: './registration.component.html',
-  styleUrl: './registration.component.css'
+  styleUrls: ['./registration.component.css']
 })
-export class LoanRegistrationComponent {
+export class RegistrationComponent implements OnInit {
   loanForm: FormGroup;
-  dniErrorMessage: string = '';
-  errorMessage: string = '';
-  successMessage: string = '';  // Añadido para manejar el éxito
+  dniErrorMessage: string | null = null;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private loanService: LoanService, private router: Router) {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras.state as { identifier: string; fullName: string };
+  
+    // Inicializar formulario
     this.loanForm = this.fb.group({
-      clientName: ['', [Validators.required]],
-      clientDNI: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],  // Solo 8 dígitos numéricos
-      clientAddress: ['', [Validators.required]],
-      amount: ['', [Validators.required, Validators.min(1)]],
-      duration: ['', [Validators.required]],
+      identifier: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      fullName: ['', Validators.required],
+      amount: ['', Validators.required],
+      months: ['', [Validators.required, Validators.min(1)]]
     });
-  }
-
-  onSubmit() {
-    if (this.loanForm.valid) {
-      this.loanService.createLoan(this.loanForm.value).subscribe({
-        next: response => {
-          this.successMessage = 'Préstamo registrado con éxito.';  // Mensaje de éxito
-          setTimeout(() => {
-            this.router.navigate(['/admin/dashboard']);
-          }, 1500);  // Redirigir después de 1.5 segundos
-        },
-        error: err => {
-          if (err.status === 400 && err.error === 'DNI no válido') {
-            this.dniErrorMessage = 'El DNI proporcionado no es válido.';
-          } else {
-            this.errorMessage = 'Error al registrar el préstamo.';
-          }
-        }
+  
+    // Si los datos del estado están disponibles, actualiza los valores y desactiva campos
+    if (state) {
+      this.loanForm.patchValue({
+        identifier: state.identifier,
+        fullName: state.fullName
       });
+      this.loanForm.get('identifier')?.disable();
+      this.loanForm.get('fullName')?.disable();
     }
   }
 
-  cancelRegistration() {
+  ngOnInit(): void {}
+
+  // Enviar el formulario
+  onSubmit(): void {
+    if (this.loanForm.valid) {
+      const loanData = this.loanForm.getRawValue(); // Obtener todos los valores, incluyendo los deshabilitados
+      this.loanService.createLoan(loanData).subscribe(
+        (response) => {
+          this.successMessage = 'El préstamo se ha creado exitosamente.';
+          this.errorMessage = null;
+          console.log('Préstamo creado:', response);
+  
+          // Redirigir después de 3 segundos
+          setTimeout(() => {
+            this.router.navigate(['/admin/dashboard']);
+          }, 2000); // 3000 ms = 3 segundos
+        },
+        (error) => {
+          this.errorMessage = 'Error al crear el préstamo.';
+          this.successMessage = null;
+          console.error('Error al crear el préstamo:', error);
+        }
+      );
+    }
+  }
+
+  cancelRegistration(): void {
+    this.loanForm.reset();
+    this.dniErrorMessage = null;
+    this.errorMessage = null;
+    this.successMessage = null;
     this.router.navigate(['/admin/dashboard']);
   }
 }

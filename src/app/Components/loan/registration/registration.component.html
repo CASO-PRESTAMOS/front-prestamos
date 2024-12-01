@@ -2,41 +2,58 @@
   <div class="bg-white p-8 rounded-lg shadow-lg w-96">
     <h2 class="text-xl font-bold mb-6 text-center">Datos del Préstamo</h2>
     <form [formGroup]="loanForm" (ngSubmit)="onSubmit()">
-      <label class="block mb-2 text-sm font-medium text-gray-700">Nombre Completo</label>
-      <input formControlName="clientName" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="Nombre Completo">
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">DNI</label>
-      <input formControlName="clientDNI" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="DNI">
-      <div *ngIf="loanForm.get('clientDNI')?.touched && loanForm.get('clientDNI')?.invalid">
-        <small *ngIf="loanForm.get('clientDNI')?.errors?.['required']" class="text-red-500">El DNI es requerido.</small>
-        <small *ngIf="loanForm.get('clientDNI')?.errors?.['pattern']" class="text-red-500">El DNI debe contener exactamente 8 dígitos.</small>
-      </div>
-      <div *ngIf="dniErrorMessage" class="text-red-500">
-        {{ dniErrorMessage }}
+      <!-- Nombre y Apellidos -->
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700">Nombre y Apellidos</label>
+        <input formControlName="fullName" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
+          placeholder="Nombre y Apellidos" />
       </div>
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">Dirección</label>
-      <input formControlName="clientAddress" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="Dirección">
+      <!-- DNI -->
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700">DNI</label>
+        <input formControlName="identifier" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
+          placeholder="DNI" />
+        <div *ngIf="dniErrorMessage" class="text-red-500">
+          {{ dniErrorMessage }}
+        </div>
+      </div>
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">Monto</label>
-      <input formControlName="amount" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="Monto">
+      <!-- Monto -->
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700">Monto</label>
+        <input formControlName="amount" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          placeholder="Monto" />
+      </div>
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">Plazo</label>
-      <select formControlName="duration" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg">
-        <option value="2">2 meses</option>
-        <option value="6">6 meses</option>
-      </select>
+      <!-- Plazo (en meses) -->
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700">Plazo (en meses)</label>
+        <select formControlName="months" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+          <option value="" disabled selected>Seleccione el plazo</option>
+          <option value="1">1 mes</option>
+          <option value="6">6 meses</option>
+        </select>
+      </div>
 
-      <div *ngIf="errorMessage" class="text-red-500 mb-4">
+      <!-- Mensajes de error o éxito -->
+      <div *ngIf="errorMessage" class="text-red-500 mb-4 text-center">
         {{ errorMessage }}
       </div>
-
-      <div *ngIf="successMessage" class="text-green-500 mt-4 text-center">
+      <div *ngIf="successMessage" class="text-green-500 mb-4 text-center">
         {{ successMessage }}
       </div>
 
-      <button type="submit" [disabled]="loanForm.invalid" class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-700">Crear Préstamo</button>
-      <button type="button" (click)="cancelRegistration()" class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-700 mt-2">Cancelar</button>
+      <!-- Botones -->
+      <button type="submit" [disabled]="loanForm.invalid"
+        class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-700">
+        Crear Préstamo
+      </button>
+      <button type="button" (click)="cancelRegistration()"
+        class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-700 mt-2">
+        Cancelar
+      </button>
     </form>
   </div>
 </div>

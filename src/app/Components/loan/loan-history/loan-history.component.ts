@@ -1,41 +1,57 @@
-import { Component,OnInit } from '@angular/core';
-import {LoanService} from "../../Services/loan.service";
-import {Loan} from "../loan.model";
-import {DatePipe, NgForOf, NgIf} from "@angular/common";
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LoanService } from "../../Services/loan.service";
+import { LoanDetails, PaymentSchedule } from "../../Sechedule/payment-schedule.model";
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-loan-history',
   standalone: true,
-  imports: [
-    NgForOf,
-    NgIf,
-    DatePipe
-  ],
+  imports: [CommonModule],
   templateUrl: './loan-history.component.html',
-  styleUrl: './loan-history.component.css'
+  styleUrls: ['./loan-history.component.css']
 })
 export class LoanHistoryComponent implements OnInit {
-  loans: Loan[] = [];
+  loans: LoanDetails[] = []; // Almacenará los préstamos detallados con status "PAID"
 
   constructor(private loanService: LoanService) {}
 
   ngOnInit(): void {
-    this.loadLoans();
+    this.loadPaidLoans();
   }
 
-  loadLoans(): void {
-    this.loanService.getAllLoans().subscribe(
-      (loans) => {
-        this.loans = loans;
+  loadPaidLoans(): void {
+    // Supongamos que tienes un método para obtener todos los identificadores de usuarios
+    this.loanService.getAllLoans().subscribe({
+      next: (allLoans) => {
+        const identifiers = allLoans.map(loan => loan.identifier);
+
+        // Hacer llamadas paralelas a getLoanByUserIdentifier para cada identifier
+        const loanRequests = identifiers.map(identifier => 
+          this.loanService.getLoanByUserIdentifier(identifier)
+        );
+
+        forkJoin(loanRequests).subscribe({
+          next: (allLoanDetails) => {
+            // Combinar resultados y filtrar solo los préstamos completamente pagados
+            this.loans = allLoanDetails
+              .flat() // Aplanar el array de arrays
+              .filter((loan: LoanDetails) => 
+                loan.paymentScheduleList.every((payment: PaymentSchedule) => payment.status === 'PAID')
+              );
+          },
+          error: (error) => {
+            console.error('Error al cargar los detalles de los préstamos:', error);
+          }
+        });
       },
-      (error) => {
-        console.error('Error al cargar el historial de préstamos', error);
+      error: (error) => {
+        console.error('Error al obtener identificadores de préstamos:', error);
       }
-    );
+    });
   }
 
   goBack(): void {
-    // Aquí navegamos de regreso al dashboard
     window.history.back();
   }
 }

@@ -1,29 +1,31 @@
-<div class="container mx-auto my-8 p-4">
-  <h2 class="text-3xl font-bold mb-6 text-center">Historial Completo de Préstamos</h2>
+<div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
+  <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">
+    Historial Completo de Préstamos
+  </h2>
 
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white shadow-md rounded">
       <thead class="bg-gray-800 text-white">
-      <tr>
-        <th class="py-3 px-6 text-left">Cliente</th>
-        <th class="py-3 px-6 text-left">Monto</th>
-        <th class="py-3 px-6 text-left">Monto Total</th>
-        <th class="py-3 px-6 text-left">Fecha de Inicio</th>
-        <th class="py-3 px-6 text-left">Fecha de Vencimiento</th>
-        <th class="py-3 px-6 text-left">Duración</th>
-        <th class="py-3 px-6 text-left">Estado</th>
-      </tr>
+        <tr>
+          <th class="py-3 px-6 text-left">Cliente</th>
+          <th class="py-3 px-6 text-left">DNI</th>
+          <th class="py-3 px-6 text-left">Monto</th>
+          <th class="py-3 px-6 text-left">Intereses</th>
+          <th class="py-3 px-6 text-left">Fecha de Inicio</th>
+          <th class="py-3 px-6 text-left">Fecha de Fin</th>
+          <th class="py-3 px-6 text-left">Estado</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let loan of loans" class="border-b hover:bg-gray-100">
-        <td class="py-3 px-6">{{ loan.clientName }}</td>
-        <td class="py-3 px-6">{{ loan.amount }}</td>
-        <td class="py-3 px-6">{{ loan.totalAmount }}</td>
-        <td class="py-3 px-6">{{ loan.startDate | date: 'mediumDate' }}</td>
-        <td class="py-3 px-6">{{ loan.expireDate | date: 'mediumDate' }}</td>
-        <td class="py-3 px-6">{{ loan.duration }} meses</td>
-        <td class="py-3 px-6">{{ loan.status }}</td>
-      </tr>
+        <tr *ngFor="let loan of loans" class="border-b hover:bg-gray-100">
+          <td class="py-3 px-6">{{ loan.user.fullName }}</td>
+          <td class="py-3 px-6">{{ loan.user.identifier }}</td>
+          <td class="py-3 px-6">{{ loan.amount }}</td>
+          <td class="py-3 px-6">{{ loan.amount * loan.interestRate | currency }}</td>
+          <td class="py-3 px-6">{{ loan.startDate | date }}</td>
+          <td class="py-3 px-6">{{ loan.endDate | date }}</td>
+          <td class="py-3 px-6 text-green-600 font-bold">Completado</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -31,7 +33,8 @@
   <div class="mt-6 text-center">
     <button
       (click)="goBack()"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+    >
       Volver al Dashboard
     </button>
   </div>
