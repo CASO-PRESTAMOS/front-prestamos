@@ -21,7 +21,7 @@
           <td class="py-3 px-6">{{ loan.user.fullName }}</td>
           <td class="py-3 px-6">{{ loan.user.identifier }}</td>
           <td class="py-3 px-6">{{ loan.amount }}</td>
-          <td class="py-3 px-6">{{ loan.amount * loan.interestRate | currency }}</td>
+          <td class="py-3 px-6">{{ loan.interestRate * 100 | number:'1.0-2' }} %</td>
           <td class="py-3 px-6">{{ loan.startDate | date }}</td>
           <td class="py-3 px-6">{{ loan.endDate | date }}</td>
           <td class="py-3 px-6 text-green-600 font-bold">Completado</td>
