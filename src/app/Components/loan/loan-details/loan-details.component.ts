@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoanService } from '../../Services/loan.service';
-import { LoanDetails } from '../../Sechedule/payment-schedule.model';
-import { PaymentSchedule } from '../../Sechedule/payment-schedule.model';
+import { LoanDetails, PaymentSchedule } from '../../Sechedule/payment-schedule.model';
 
 @Component({
   selector: 'app-loan-details',
@@ -13,7 +12,7 @@ import { PaymentSchedule } from '../../Sechedule/payment-schedule.model';
   styleUrls: ['./loan-details.component.css']
 })
 export class LoanDetailsComponent implements OnInit {
-  loan: LoanDetails | null = null;
+  loan: LoanDetails | null = null; // Almacenará los detalles del préstamo
 
   constructor(
     private loanService: LoanService,
@@ -22,29 +21,25 @@ export class LoanDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const identifier = this.route.snapshot.paramMap.get('identifier');
-    if (identifier) {
-      this.loadLoanDetails(identifier);
+    const id = this.route.snapshot.paramMap.get('id'); // Obtiene el ID del préstamo desde la URL
+    if (id) {
+      this.loadLoanDetails(parseInt(id, 10)); // Convertir a número y cargar los detalles
     } else {
-      console.error('No identifier provided in route');
+      console.error('No ID provided in route');
       this.router.navigate(['/admin/dashboard']);
     }
   }
 
-  loadLoanDetails(identifier: string): void {
-    this.loanService.getLoanByUserIdentifier(identifier).subscribe(
-      (loanDetailsArray: LoanDetails[]) => {
-        if (loanDetailsArray && loanDetailsArray.length > 0) {
-          this.loan = loanDetailsArray[0]; // Tomamos el primer préstamo del array
-        } else {
-          console.warn('No loans found for this user');
-        }
+  loadLoanDetails(id: number): void {
+    this.loanService.getLoanDetailsById(id).subscribe({
+      next: (loanDetails: LoanDetails) => {
+        this.loan = loanDetails; // Asigna los detalles del préstamo
       },
-      (error: any) => {
+      error: (error) => {
         console.error('Error loading loan details:', error);
-        this.router.navigate(['/admin/dashboard']);
+        this.router.navigate(['/admin/dashboard']); // Navega al dashboard si ocurre un error
       }
-    );
+    });
   }
 
   private checkLoanCompletion(): void {
@@ -61,12 +56,8 @@ export class LoanDetailsComponent implements OnInit {
   
     this.loanService.changeState(payment.id).subscribe({
       next: () => {
-        // Actualiza el estado del pago localmente
-        payment.status = 'PAID';
-        console.log(`Pago con ID ${payment.id} marcado como pagado.`);
-  
-        // Verifica si todos los pagos están completados
-        this.checkLoanCompletion();
+        payment.status = 'PAID'; // Actualiza el estado del pago localmente
+        this.checkLoanCompletion(); // Verifica si el préstamo está completado
       },
       error: (error) => {
         console.error('Error al marcar el pago como pagado:', error);
@@ -78,21 +69,11 @@ export class LoanDetailsComponent implements OnInit {
     if (!this.loan) {
       return;
     }
-  
-    // Bloquear el botón temporalmente
-    const loanId = this.loan.id;
-  
-    this.loanService.markAllPaymentsAsPaid(loanId).subscribe({
+
+    this.loanService.markAllPaymentsAsPaid(this.loan.id).subscribe({
       next: () => {
-        // Actualizar el estado de todos los pagos a "PAID" en el frontend
-        this.loan!.paymentScheduleList.forEach(payment => {
-          payment.status = 'PAID';
-        });
-  
-        // Cambiar el estado del préstamo a "PAID"
-        this.loan!.status = 'PAID';
-  
-        console.log(`Todos los pagos del préstamo con ID ${loanId} se marcaron como pagados.`);
+        this.loan!.paymentScheduleList.forEach(payment => payment.status = 'PAID'); // Actualiza localmente
+        this.loan!.status = 'PAID'; // Cambia el estado del préstamo
       },
       error: (error) => {
         console.error('Error al marcar todos los pagos como completados:', error);
@@ -101,11 +82,7 @@ export class LoanDetailsComponent implements OnInit {
   }
 
   allPaymentsArePaid(): boolean {
-    if (!this.loan) {
-      return false;
-    }
-  
-    return this.loan.paymentScheduleList.every(payment => payment.status === 'PAID');
+    return this.loan ? this.loan.paymentScheduleList.every(payment => payment.status === 'PAID') : false;
   }
 
   goBack(): void {

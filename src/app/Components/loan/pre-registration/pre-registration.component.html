@@ -3,11 +3,11 @@
     <h2 class="text-xl font-bold mb-6 text-center">Ingrese un DNI válido</h2>
     <form [formGroup]="dniForm" (ngSubmit)="onSubmit()">
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">DNI</label>
+      <label class="block mb-2 text-sm font-medium text-gray-700">DNI/RUC</label>
       <input formControlName="identifier" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="DNI">
       <div *ngIf="dniForm.get('identifier')?.touched && dniForm.get('identifier')?.invalid">
-        <small *ngIf="dniForm.get('identifier')?.errors?.['required']" class="text-red-500">El DNI es requerido.</small>
-        <small *ngIf="dniForm.get('identifier')?.errors?.['pattern']" class="text-red-500">El DNI debe contener exactamente 8 dígitos.</small>
+        <small *ngIf="dniForm.get('identifier')?.errors?.['required']" class="text-red-500">El DNI/RUC es requerido.</small>
+        <small *ngIf="dniForm.get('identifier')?.errors?.['pattern']" class="text-red-500">El DNI debe contener exactamente 8 dígitos y RUC 11.</small>
       </div>
       <div *ngIf="dniErrorMessage" class="text-red-500">
         {{ dniErrorMessage }}

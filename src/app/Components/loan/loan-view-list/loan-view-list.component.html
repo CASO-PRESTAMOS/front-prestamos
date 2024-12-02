@@ -1,0 +1,85 @@
+<div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
+
+    <!-- Información del cliente -->
+    <div class="mb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-700">Información del Cliente</h3>
+      </div>
+      <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
+        <p><strong>Cliente:</strong> {{ userFullName }}</p>
+        <p><strong>DNI:</strong> {{ userIdentifier }}</p>
+      </div>
+    </div>
+  
+    <!-- Tabla de préstamos -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded">
+        <thead class="bg-gray-800 text-white">
+          <tr>
+            <th class="py-3 px-6 text-left">Cliente</th>
+            <th class="py-3 px-6 text-left">DNI</th>
+            <th class="py-3 px-6 text-left">Monto</th>
+            <th class="py-3 px-6 text-left">Intereses</th>
+            <th class="py-3 px-6 text-left">Fecha de Inicio</th>
+            <th class="py-3 px-6 text-left">Fecha de Fin</th>
+            <th class="py-3 px-6 text-left">Estado</th>
+            <th class="py-3 px-6 text-left">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let loan of loans" class="border-b hover:bg-gray-100">
+            <td class="py-3 px-6">{{ loan.user.fullName }}</td>
+            <td class="py-3 px-6">{{ loan.user.identifier }}</td>
+            <td class="py-3 px-6">{{ loan.amount | currency:'S/.' }}</td>
+            <td class="py-3 px-6">{{ 100*loan.interestRate }}%</td>
+            <td class="py-3 px-6">{{ loan.startDate | date: 'mediumDate' }}</td>
+            <td class="py-3 px-6">{{ loan.endDate | date: 'mediumDate' }}</td>
+            <td class="py-3 px-6">
+                <span 
+                  [ngClass]="{
+                    'text-red-600 font-bold': loan.status === 'LATE',
+                    'text-orange-600 font-bold': loan.status === 'UNPAID',
+                    'text-green-600 font-bold': loan.status === 'PAID'
+                  }"
+                >
+                  {{ 
+                    loan.status === 'PAID' 
+                      ? 'Completado' 
+                      : loan.status === 'LATE' 
+                        ? 'Atrasado' 
+                        : 'Pendiente' 
+                  }}
+                </span>
+              </td>
+            <td class="py-3 px-6">
+                <!-- Botón azul -->
+                <button
+                  (click)="viewLoanDetails(loan.id)"
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 mr-2"
+                >
+                  Ver Detalles
+                </button>
+              
+                <!-- Botón morado -->
+                <button
+                  (click)="viewLoanChronogram()"
+                  class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                  Ver Cronogramas
+                </button>
+              </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Botón para regresar -->
+    <div class="mt-6 text-center">
+      <button
+        (click)="goBack()"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+      >
+        Volver al Dashboard
+      </button>
+    </div>
+  </div>

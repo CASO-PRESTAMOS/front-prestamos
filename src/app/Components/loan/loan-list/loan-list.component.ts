@@ -41,6 +41,6 @@ export class LoanListComponent implements OnInit {
   }
 
   viewLoanDetails(loan: Loan): void {
-    this.router.navigate(['/loan/loan-details', loan.identifier]);
+    this.router.navigate(['/loan/loan-view-list', loan.identifier]);
   }
 }

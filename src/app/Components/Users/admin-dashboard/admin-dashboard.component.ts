@@ -20,6 +20,7 @@ export class AdminDashboardComponent implements OnInit {
   successMessage: string | null = null;
   errorMessage: string = '';
   loan: LoanDetails | null = null;
+  allLoans: Loan[] = [];
 
   constructor(
     private loanService: LoanService,
@@ -35,6 +36,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loanService.getAllLoans().subscribe(
       (loans: Loan[]) => {
         this.recentLoans = loans.slice(0, 3); // Mostrar solo los últimos 3 préstamos
+        this.allLoans = loans;
         this.simulatePaymentSchedules(); // Simular cronogramas basados en los préstamos
       },
       (error: any) => {
@@ -47,24 +49,47 @@ export class AdminDashboardComponent implements OnInit {
   simulatePaymentSchedules(): void {
     this.paymentSchedules = []; // Reiniciar los cronogramas
   
-    this.recentLoans.forEach(loan => {
+    // Obtener todos los préstamos activos
+    this.allLoans.forEach(loan => {
       this.loanService.getLoanByUserIdentifier(loan.identifier).subscribe({
         next: (loanDetailsArray: LoanDetails[]) => {
           if (loanDetailsArray && loanDetailsArray.length > 0) {
-            const loanDetails = loanDetailsArray[0]; // Usar el primer préstamo
-            const upcomingPayment = loanDetails.paymentScheduleList
-              .filter(payment => payment.status !== 'PAID') // Solo pagos pendientes
-              .sort((a, b) => new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime())[0]; // Más cercano
+            // Procesar todos los préstamos del usuario
+            const unpaidOrLatePayments: any[] = [];
   
-            // Si hay un pago pendiente más cercano, agregarlo al cronograma
+            loanDetailsArray.forEach(loanDetails => {
+              // Filtrar pagos "UNPAID" o "LATE" para este préstamo
+              const filteredPayments = loanDetails.paymentScheduleList.filter(
+                payment => payment.status === 'UNPAID' || payment.status === 'LATE'
+              );
+  
+              // Añadir pagos pendientes o atrasados a la lista general
+              unpaidOrLatePayments.push(...filteredPayments);
+            });
+  
+            // Ordenar todos los pagos pendientes o atrasados por fecha
+            unpaidOrLatePayments.sort(
+              (a, b) => new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime()
+            );
+  
+            // Tomar el pago más cercano si existe
+            const upcomingPayment = unpaidOrLatePayments[0];
             if (upcomingPayment) {
-              this.paymentSchedules.push({
-                id: upcomingPayment.id, // ID del pago
-                loan: loanDetails.user, // Datos del cliente
-                paymentDueDate: upcomingPayment.paymentDate, // Fecha de pago
-                installmentAmount: upcomingPayment.amount, // Monto de la cuota
-                paid: upcomingPayment.status === 'PAID' // Estado del pago
-              });
+              // Buscar los detalles del préstamo asociado al pago
+              const associatedLoan = loanDetailsArray.find(loan =>
+                loan.paymentScheduleList.some(payment => payment.id === upcomingPayment.id)
+              );
+  
+              if (associatedLoan) {
+                this.paymentSchedules.push({
+                  id: upcomingPayment.id, // ID del pago
+                  loan: associatedLoan.user, // Datos del cliente
+                  paymentDueDate: upcomingPayment.paymentDate, // Fecha de pago
+                  installmentAmount: upcomingPayment.amount, // Monto de la cuota
+                  paid: upcomingPayment.status === 'PAID', // Estado del pago
+                  status: upcomingPayment.status // Guardar el estado real del pago
+                });
+              }
             }
           }
         },
@@ -94,7 +119,7 @@ export class AdminDashboardComponent implements OnInit {
         // Esperar 2 segundos y recargar los cronogramas
         setTimeout(() => {
           this.simulatePaymentSchedules(); // Recargar cronogramas
-        }, 2000);
+        }, 100);
       },
       error: (error) => {
         this.errorMessage = 'Error al marcar el pago como completado.';
@@ -113,6 +138,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   viewLoanDetails(loan: Loan): void {
-    this.router.navigate(['/loan/loan-details', loan.identifier]);
+    this.router.navigate(['/loan/loan-view-list', loan.identifier]);
   }
 }

@@ -1,92 +1,91 @@
 <div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
-    <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">Detalles del Préstamo</h2>
+  <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">Detalles del Préstamo</h2>
 
-    <div *ngIf="loan; else loading">
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
-            <h3 class="text-2xl font-bold text-gray-700 mb-4">Información General</h3>
-            <p><strong>Cliente:</strong> {{ loan.user.fullName }}</p>
-            <p><strong>DNI:</strong> {{ loan.user.identifier }}</p>
-            <p><strong>Monto:</strong> S/ {{ loan.amount }}</p>
-            <p><strong>Plazo:</strong> {{ loan.months }} meses</p>
-            <p>
-                <strong>Tasa de Interés:</strong>
-                {{ loan.interestRate * 100 | number: '1.2-2' }}%
-            </p>
-            <p><strong>Fecha de Inicio:</strong> {{ loan.startDate }}</p>
-            <p><strong>Fecha de Fin:</strong> {{ loan.endDate }}</p>
-            <strong>Estado:</strong>
-            <span [ngClass]="{
-                'text-red-600 font-bold': loan.status === 'UNPAID',
-                'text-green-600 font-bold': loan.status === 'PAID'
-            }">
-                {{ loan.status === 'UNPAID' ? 'No Completado' : 'Completado' }}
-            </span>
-        </div>
-
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-bold text-gray-700">Cronograma de Pagos</h3>
-            <button
-              (click)="markAllAsPaid()"
-              [disabled]="loan.status === 'PAID'"
-              class="font-bold py-2 px-4 rounded-lg shadow-lg"
-              [ngClass]="{
-                'bg-blue-500 hover:bg-blue-700 text-white': loan.status !== 'PAID',
-                'bg-green-500 text-white': loan.status === 'PAID'
-              }"
-            >
-              {{ loan.status === 'PAID' ? 'Completado' : 'Marcar todo como Completado' }}
-            </button>
-          </div>
-
-        <div class="overflow-x-auto w-full max-w-4xl mx-auto">
-            <table class="table-auto min-w-full bg-white shadow-lg rounded-lg">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-4 py-3 text-left">Fecha</th>
-                        <th class="px-4 py-3 text-left">Monto</th>
-                        <th class="px-4 py-3 text-left">Estado</th>
-                        <!-- Ocultar la columna de acción si todos los pagos están "PAID" -->
-                        <th *ngIf="!allPaymentsArePaid()" class="px-4 py-3 text-left">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let payment of loan?.paymentScheduleList" class="hover:bg-gray-100 transition">
-                      <td class="border px-4 py-3">{{ payment.paymentDate }}</td>
-                      <td class="border px-4 py-3">{{ payment.amount | currency: 'S/.' }}</td>
-                      <td class="border px-4 py-3">
-                        <span
-                          [ngClass]="{
-                            'text-red-600 font-bold': payment.status === 'UNPAID',
-                            'text-green-600 font-bold': payment.status === 'PAID'
-                          }"
-                        >
-                          {{ payment.status === 'UNPAID' ? 'Pendiente' : 'Pagado' }}
-                        </span>
-                      </td>
-                      <!-- Ocultar los botones de acción si todos los pagos están "PAID" -->
-                      <td *ngIf="!allPaymentsArePaid()" class="border px-4 py-3">
-                        <button
-                          *ngIf="payment.status === 'UNPAID'"
-                          (click)="markAsPaid(payment)"
-                          class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-lg"
-                        >
-                          Marcar como Pagado
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-            </table>
-        </div>
+  <div *ngIf="loan; else loading">
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
+      <h3 class="text-2xl font-bold text-gray-700 mb-4">Información General</h3>
+      <p><strong>Cliente:</strong> {{ loan.user.fullName }}</p>
+      <p><strong>DNI:</strong> {{ loan.user.identifier }}</p>
+      <p><strong>Monto:</strong> S/ {{ loan.amount }}</p>
+      <p><strong>Plazo:</strong> {{ loan.months }} meses</p>
+      <p>
+        <strong>Tasa de Interés:</strong>
+        {{ loan.interestRate * 100 | number: '1.2-2' }}%
+      </p>
+      <p><strong>Fecha de Inicio:</strong> {{ loan.startDate }}</p>
+      <p><strong>Fecha de Fin:</strong> {{ loan.endDate }}</p>
+      <strong>Estado:</strong>
+      <span [ngClass]="{
+    'text-red-600 font-bold': loan.status === 'LATE',
+    'text-orange-600 font-bold': loan.status === 'UNPAID',
+    'text-green-600 font-bold': loan.status === 'PAID'
+      }">
+        {{
+        loan.status === 'PAID'
+        ? 'Completado'
+        : loan.status === 'LATE'
+        ? 'Atrasado'
+        : 'Pendiente'
+        }}
+      </span>
     </div>
 
-    <ng-template #loading>
-        <p class="text-center text-gray-500">Cargando detalles del préstamo...</p>
-    </ng-template>
 
-    <div class="text-center mt-10">
-        <button (click)="goBack()"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg">
-            Regresar al Panel
-        </button>
+    <div class="overflow-x-auto w-full max-w-4xl mx-auto">
+      <table class="table-auto min-w-full bg-white shadow-lg rounded-lg">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-3 text-left">Fecha</th>
+            <th class="px-4 py-3 text-left">Monto</th>
+            <th class="px-4 py-3 text-left">Estado</th>
+            <!-- Ocultar la columna de acción si todos los pagos están "PAID" -->
+            <th *ngIf="!allPaymentsArePaid()" class="px-4 py-3 text-left">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of loan?.paymentScheduleList" class="hover:bg-gray-100 transition">
+            <td class="border px-4 py-3">{{ payment.paymentDate }}</td>
+            <td class="border px-4 py-3">{{ payment.amount | currency: 'S/.' }}</td>
+            <td class="border px-4 py-3">
+              <span
+                [ngClass]="{
+                  'text-red-600 font-bold': payment.status === 'LATE',
+                  'text-orange-600 font-bold': payment.status === 'UNPAID',
+                  'text-green-600 font-bold': payment.status === 'PAID'
+                }"
+              >
+                {{ 
+                  payment.status === 'PAID' 
+                    ? 'Pagado' 
+                    : payment.status === 'LATE' 
+                      ? 'Atrasado' 
+                      : 'Pendiente' 
+                }}
+              </span>
+            </td>
+            <td *ngIf="!allPaymentsArePaid()" class="border px-4 py-3">
+              <button
+                *ngIf="payment.status === 'UNPAID'|| payment.status === 'LATE'"
+                (click)="markAsPaid(payment)"
+                class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-lg"
+              >
+                Marcar como Pagado
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+
+  <ng-template #loading>
+    <p class="text-center text-gray-500">Cargando detalles del préstamo...</p>
+  </ng-template>
+
+  <div class="text-center mt-10">
+    <button (click)="goBack()"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg">
+      Regresar al Panel
+    </button>
+  </div>
 </div>

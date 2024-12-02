@@ -6,6 +6,7 @@ import {AdminDashboardComponent} from "./Components/Users/admin-dashboard/admin-
 import {LoanHistoryComponent} from "./Components/loan/loan-history/loan-history.component";
 import {LoanDetailsComponent} from "./Components/loan/loan-details/loan-details.component";
 import {LoanListComponent} from "./Components/loan/loan-list/loan-list.component";
+import {LoanViewListComponent} from "./Components/loan/loan-view-list/loan-view-list.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -14,9 +15,7 @@ export const routes: Routes = [
   { path: 'loan/create', component: RegistrationComponent },
   { path: 'admin/dashboard', component: AdminDashboardComponent },
   { path: 'loan/history', component: LoanHistoryComponent },
-  { path: 'loan/loan-details/:identifier', component: LoanDetailsComponent },
+  { path: 'loan/loan-details/:id', component: LoanDetailsComponent },
   { path: 'loan/loan-list', component: LoanListComponent },
-
-
-
+  { path: 'loan/loan-view-list/:identifier', component: LoanViewListComponent },
 ];

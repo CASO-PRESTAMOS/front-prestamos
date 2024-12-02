@@ -34,7 +34,7 @@
     >
       <div>
         <p class="font-medium text-gray-800"><strong>Cliente:</strong> {{ loan.fullName }}</p>
-        <p class="text-gray-600"><strong>DNI:</strong> {{ loan.identifier }}</p>
+        <p class="text-gray-600"><strong>DNI/RUC:</strong> {{ loan.identifier }}</p>
       </div>
       <button
         class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
@@ -65,13 +65,16 @@
             <td class="border px-4 py-3">{{ schedule.paymentDueDate | date }}</td>
             <td class="border px-4 py-3">{{ schedule.installmentAmount | currency:'S/.' }}</td>
             <td class="border px-4 py-3">
-              <span [ngClass]="schedule.paid ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
-                {{ schedule.paid ? 'Pagado' : 'Pendiente' }}
+              <span [ngClass]="{
+                'text-red-600 font-semibold': schedule.status === 'LATE',
+                'text-yellow-600 font-semibold': schedule.status === 'UNPAID'
+              }">
+                {{ schedule.status === 'LATE' ? 'Atrasado' : 'Pendiente' }}
               </span>
             </td>
             <td class="border px-4 py-3">
               <button
-                *ngIf="!schedule.paid"
+                *ngIf="schedule.status !== 'PAID'"
                 (click)="markAsCompleted(schedule)"
                 class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg transition hover:bg-blue-700"
               >
@@ -79,6 +82,7 @@
               </button>
             </td>
           </tr>
+          
         </tbody>
       </table>
     </div>
