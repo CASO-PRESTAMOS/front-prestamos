@@ -120,7 +120,7 @@
                   }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
                 <button *ngIf="schedule.status !== 'PAID'" [disabled]="schedule.status === 'JUDICIAL_DEBT'"
                   (click)="markAsCompleted(schedule)"
                   class="text-white py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
@@ -131,8 +131,8 @@
                   {{ schedule.status === 'JUDICIAL_DEBT' ? 'Acción No Permitida' : 'Marcar como Pagado' }}
                 </button>
                 <button (click)="viewLoanDetails(schedule.loan)"
-                  class="text-white py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500">
-                  Detalles</button>
+                class="text-white py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+                > Detalles</button>
               </td>
             </tr>
           </tbody>
