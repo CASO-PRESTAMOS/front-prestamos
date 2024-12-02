@@ -28,7 +28,7 @@ export class LoanService {
       .set('identifier', loanData.identifier.toString())
       .set('amount', loanData.amount)
       .set('months', loanData.months);
-  
+
     return this.http.post<Loan>(`${this.apiUrl}/loans/create`, null, { headers, params });
   }
 
@@ -56,8 +56,8 @@ export class LoanService {
   }
 
   changeState(paymentId: number): Observable<void> {
-    const headers = this.getAuthHeaders(); 
-    const url = `${this.apiUrl}/loans/payment/${paymentId}/markPaid`; 
+    const headers = this.getAuthHeaders();
+    const url = `${this.apiUrl}/loans/payment/${paymentId}/markPaid`;
     return this.http.patch<void>(url, null, { headers });
   }
 
@@ -70,5 +70,23 @@ export class LoanService {
     const headers = this.getAuthHeaders();
     return this.http.get<LoanDetails>(`${this.apiUrl}/loans/loan/${id}`, { headers });
   }
+
+  generateLoanPdf(loanId: number): Observable<Blob> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${environment.apiUrl}/pdf/loan/${loanId}`, {
+      headers,
+      responseType: 'blob' // Asegúrate de manejar el tipo de respuesta como blob
+    });
+  }
+
+  generateBoleta(loanId: number, paymentId: number): Observable<Blob> {
+    const headers = this.getAuthHeaders();
+    const url = `${environment.apiUrl}/pdf/loanBoleta/${loanId}/schedule/${paymentId}`;
+    return this.http.get(url, {
+      headers,
+      responseType: 'blob', // Indica que el servidor retorna un archivo
+    });
+  }
+
 
 }

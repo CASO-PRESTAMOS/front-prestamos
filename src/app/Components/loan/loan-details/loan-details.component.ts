@@ -53,7 +53,7 @@ export class LoanDetailsComponent implements OnInit {
     if (!payment || payment.status === 'PAID') {
       return; // Evita ejecutar si ya está pagado
     }
-  
+
     this.loanService.changeState(payment.id).subscribe({
       next: () => {
         payment.status = 'PAID'; // Actualiza el estado del pago localmente
@@ -87,5 +87,52 @@ export class LoanDetailsComponent implements OnInit {
 
   goBack(): void {
     window.history.back();
+  }
+
+  generatePdf(): void {
+    if (this.loan) {
+      this.loanService.generateLoanPdf(this.loan.id).subscribe({
+        next: (response) => {
+          const blob = new Blob([response], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `loan-details-${this.loan?.id}.pdf`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+          console.error('Error al generar el PDF:', error);
+        }
+      });
+    } else {
+      console.warn('No se ha cargado el préstamo. No se puede generar el PDF.');
+    }
+  }
+
+  generateBoleta(payment: PaymentSchedule): void {
+    if (!payment) {
+      return;
+    }
+
+    this.loanService.generateBoleta(this.loan!.id, payment.id).subscribe({
+      next: (response: Blob) => {
+        // Crea un enlace para descargar el archivo PDF
+        const url = window.URL.createObjectURL(response);
+        const link = document.createElement('a');
+        link.href = url;
+        if(this.loan?.user.identifier.length==8){
+          link.download = `Comprobante_Boleta.pdf`;
+        }
+        if(this.loan?.user.identifier.length==11){
+          link.download = `Comprobante_Factura.pdf`;
+        }
+        link.click();
+        window.URL.revokeObjectURL(url); // Limpia el objeto URL
+      },
+      error: (error) => {
+        console.error('Error al generar la boleta:', error);
+      },
+    });
   }
 }
