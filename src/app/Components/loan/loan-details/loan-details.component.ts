@@ -97,7 +97,7 @@ export class LoanDetailsComponent implements OnInit {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `comprobante-${this.loan?.id}.pdf`;
+          a.download = `Cronograma-${this.loan?.id}.pdf`;
           a.click();
           window.URL.revokeObjectURL(url);
         },
