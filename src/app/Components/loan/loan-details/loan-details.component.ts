@@ -66,22 +66,6 @@ export class LoanDetailsComponent implements OnInit {
     });
   }
 
-  markAllAsPaid(): void {
-    if (!this.loan) {
-      return;
-    }
-
-    this.loanService.markAllPaymentsAsPaid(this.loan.id).subscribe({
-      next: () => {
-        this.loan!.paymentScheduleList.forEach(payment => payment.status = 'PAID'); // Actualiza localmente
-        this.loan!.status = 'PAID'; // Cambia el estado del préstamo
-      },
-      error: (error) => {
-        console.error('Error al marcar todos los pagos como completados:', error);
-      }
-    });
-  }
-
   allPaymentsArePaid(): boolean {
     return this.loan ? this.loan.paymentScheduleList.every(payment => payment.status === 'PAID') : false;
   }

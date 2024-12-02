@@ -61,11 +61,6 @@ export class LoanService {
     return this.http.patch<void>(url, null, { headers });
   }
 
-  markAllPaymentsAsPaid(loanId: number): Observable<void> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch<void>(`${this.apiUrl}/payments/loan/${loanId}/markAsPaid`, null, { headers });
-  }
-
   getLoanDetailsById(id: number): Observable<LoanDetails> {
     const headers = this.getAuthHeaders();
     return this.http.get<LoanDetails>(`${this.apiUrl}/loans/loan/${id}`, { headers });
