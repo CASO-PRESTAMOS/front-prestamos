@@ -178,9 +178,16 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   filterSchedules(): void {
-    this.filteredPaymentSchedules = this.paymentSchedules.filter(schedule =>
-      !this.selectedStatus || schedule.status === this.selectedStatus
-    );
+    // Si no se ha seleccionado un estado (valor vacío), mostramos todos los cronogramas
+    if (this.selectedStatus === "") {
+      this.filteredPaymentSchedules = [...this.paymentSchedules];  // Crear una copia de la lista completa
+    } else {
+      // Filtramos según el estado seleccionado
+      this.filteredPaymentSchedules = this.paymentSchedules.filter(schedule =>
+        schedule.status === this.selectedStatus
+      );
+    }
   }
+
 
 }
