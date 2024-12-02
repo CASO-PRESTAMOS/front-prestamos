@@ -7,12 +7,8 @@
         <!-- Contenedor del buscador -->
         <div class="flex items-center space-x-2 w-full sm:w-auto">
           <span class="text-sm font-medium text-gray-600">Buscar</span>
-          <input
-            type="text"
-            placeholder="Nombre, DNI o RUC"
-            [(ngModel)]="searchQuery"
-            class="w-full sm:w-64 border-2 border-indigo-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
-          />
+          <input type="text" placeholder="Nombre, DNI o RUC" [(ngModel)]="searchQuery"
+            class="w-full sm:w-64 border-2 border-indigo-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" />
         </div>
       </div>
 
@@ -24,28 +20,32 @@
 
       <!-- Lista de préstamos -->
       <div *ngIf="filteredLoans && filteredLoans.length > 0; else noLoans" class="space-y-4">
-        <div *ngFor="let loan of filteredLoans" 
-             class="bg-white border border-indigo-200 rounded-lg shadow-md hover:shadow-lg transition duration-300 overflow-hidden">
+        <div *ngFor="let loan of filteredLoans"
+          class="bg-white border border-indigo-200 rounded-lg shadow-md hover:shadow-lg transition duration-300 overflow-hidden">
           <div class="p-6 flex flex-col sm:flex-row justify-between items-center">
             <div class="mb-4 sm:mb-0">
               <p class="font-semibold text-lg text-indigo-800">{{ loan.fullName }}</p>
-              <p class="text-gray-600"><span class="font-medium">DNI/RUC:</span> {{ loan.identifier }}</p>
+              <p class="text-gray-600">
+                <span class="font-medium">{{ getIdentifierType(loan.identifier) }}:</span> {{ loan.identifier }}
+              </p>
             </div>
             <button
               class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              (click)="viewLoanDetails(loan)"
-            >
+              (click)="viewLoanDetails(loan)">
               Ver Detalles
             </button>
           </div>
         </div>
       </div>
 
+
       <!-- Mensaje cuando no hay préstamos -->
       <ng-template #noLoans>
         <div class="text-center py-8">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <h3 class="mt-2 text-sm font-medium text-gray-900">No hay préstamos</h3>
           <p class="mt-1 text-sm text-gray-500">No se encontraron préstamos disponibles en este momento.</p>
@@ -55,10 +55,8 @@
 
     <!-- Botón para volver al Dashboard -->
     <div class="bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-200">
-      <button
-        (click)="goBack()"
-        class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-      >
+      <button (click)="goBack()"
+        class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         Volver al Dashboard
       </button>
     </div>

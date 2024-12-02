@@ -21,9 +21,13 @@
         <input id="password" type="password" [(ngModel)]="newPassword"
           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
           placeholder="Escribe tu nueva contraseña" />
+        <p *ngIf="newPassword.length > 0 && newPassword.length < 4" class="text-red-500 text-sm mt-1">
+          La contraseña debe tener al menos 4 caracteres.
+        </p>
         <div class="flex justify-between mt-6">
-          <button (click)="updatePassword()"
-            class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+          <button (click)="updatePassword()" [disabled]="newPassword.length < 4"
+            [ngClass]="{'bg-indigo-500 hover:bg-indigo-600': newPassword.length >= 4, 'bg-gray-400 cursor-not-allowed': newPassword.length < 4}"
+            class="text-white font-bold py-2 px-6 rounded-lg transition duration-300">
             Actualizar
           </button>
           <button (click)="closeModal()"
@@ -123,16 +127,17 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
                 <button *ngIf="schedule.status !== 'PAID'" [disabled]="schedule.status === 'JUDICIAL_DEBT'"
                   (click)="markAsCompleted(schedule)"
-                  class="text-white py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  class="font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   [ngClass]="{
-                      'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500': schedule.status !== 'JUDICIAL_DEBT',
-                      'bg-gray-400 cursor-not-allowed': schedule.status === 'JUDICIAL_DEBT'
-                    }">
+                    'bg-green-500 hover:bg-green-600 text-white focus:ring-green-500': schedule.status !== 'JUDICIAL_DEBT',
+                    'bg-gray-400 text-gray-600 cursor-not-allowed': schedule.status === 'JUDICIAL_DEBT'
+                  }">
                   {{ schedule.status === 'JUDICIAL_DEBT' ? 'Acción No Permitida' : 'Marcar como Pagado' }}
                 </button>
                 <button (click)="viewLoanDetails(schedule.loan)"
-                class="text-white py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
-                > Detalles</button>
+                  class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  Ver Detalles
+                </button>
               </td>
             </tr>
           </tbody>

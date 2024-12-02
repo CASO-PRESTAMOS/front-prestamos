@@ -42,6 +42,11 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  getIdentifierType(): string {
+    const identifier = this.loanForm.get('identifier')?.value;
+    return identifier.length === 8 ? 'DNI' : 'RUC';
+  }
+
   // Enviar el formulario
   onSubmit(): void {
     if (this.loanForm.valid) {

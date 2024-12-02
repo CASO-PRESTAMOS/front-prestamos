@@ -28,8 +28,9 @@ export class LoanPreRegistrationComponent {
     if (this.dniForm.valid) {
       this.loanService.createUser(this.dniForm.value).subscribe({
         next: response => {
-          console.log('Respuesta del backend:', response); // Agregar log para verificar los datos
-          this.successMessage = 'El DNI/RUC es válido.';
+          console.log('Respuesta del backend:', response);
+          const identifierType = this.getIdentifierType(response.identifier);
+          this.successMessage = `El ${identifierType} se ha registrado exitosamente.`;
           setTimeout(() => {
             this.router.navigate(['loan/create'], {
               state: { identifier: response.identifier, fullName: response.fullName }
@@ -49,5 +50,9 @@ export class LoanPreRegistrationComponent {
 
   cancelRegistration() {
     this.router.navigate(['/admin/dashboard']);
+  }
+
+  private getIdentifierType(identifier: string): string {
+    return identifier.length === 8 ? 'DNI' : 'RUC';
   }
 }

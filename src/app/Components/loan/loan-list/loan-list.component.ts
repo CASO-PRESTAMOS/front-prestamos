@@ -38,6 +38,16 @@ export class LoanListComponent implements OnInit {
     );
   }
 
+  getIdentifierType(identifier: string): string {
+    if (identifier.length === 8) {
+      return 'DNI';
+    } else if (identifier.length === 11) {
+      return 'RUC';
+    } else {
+      return 'ID'; // Un valor por defecto en caso de que no sea ni DNI ni RUC
+    }
+  }
+
   get filteredLoans(): Loan[] {
     if (!this.searchQuery.trim()) {
       return this.loans; // Sin filtro, retorna todos los préstamos

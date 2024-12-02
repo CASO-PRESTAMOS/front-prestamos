@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { LoanService } from '../../Services/loan.service';
 import { LoanDetails, PaymentSchedule } from '../../Schedule/payment-schedule.model';
 
+
 @Component({
   selector: 'app-loan-details',
   standalone: true,
@@ -109,6 +110,33 @@ export class LoanDetailsComponent implements OnInit {
       console.warn('No se ha cargado el préstamo. No se puede generar el PDF.');
     }
   }
+
+  canPayInstallment(payment: any): boolean {
+    if (!this.loan || !this.loan.paymentScheduleList) {
+      return false;
+    }
+    
+    const index = this.loan.paymentScheduleList.indexOf(payment);
+    
+    // Si es la primera cuota, siempre se puede pagar
+    if (index === 0) {
+      return true;
+    }
+    
+    // Verificar si todas las cuotas anteriores están pagadas
+    for (let i = 0; i < index; i++) {
+      if (this.loan.paymentScheduleList[i].status !== 'PAID') {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  getIdentifierType(identifier: string): string {
+    return identifier.length === 8 ? 'DNI' : 'RUC';
+  }
+
 
   generateBoleta(payment: PaymentSchedule): void {
     if (!payment) {

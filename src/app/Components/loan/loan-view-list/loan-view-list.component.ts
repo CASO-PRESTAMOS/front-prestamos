@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoanService } from "../../Services/loan.service";
 import { LoanDetails } from "../../Schedule/payment-schedule.model";
 
+
 @Component({
   selector: 'app-loan-view-list',
   standalone: true,
@@ -29,6 +30,16 @@ export class LoanViewListComponent implements OnInit {
       this.loadLoans(identifier);
     } else {
       console.error('No se proporcionó un identifier en la ruta.');
+    }
+  }
+
+  getIdentifierType(identifier: string): string {
+    if (identifier.length === 8) {
+      return 'DNI';
+    } else if (identifier.length === 11) {
+      return 'RUC';
+    } else {
+      return 'ID'; // Un valor por defecto en caso de que no sea ni DNI ni RUC
     }
   }
 

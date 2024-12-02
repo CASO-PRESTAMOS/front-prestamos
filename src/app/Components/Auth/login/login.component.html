@@ -31,7 +31,7 @@
         <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)" 
              class="text-red-500 text-xs mt-1">
           <p *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida.</p>
-          <p *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 8 caracteres.</p>
+          <p *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 4 caracteres.</p>
         </div>
       </div>
 
