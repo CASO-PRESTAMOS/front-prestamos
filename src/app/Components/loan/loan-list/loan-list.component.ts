@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // Importa FormsModule
 import { Router } from '@angular/router';
 import { LoanService } from '../../Services/loan.service';
 import { Loan } from '../../loan/loan.model';
@@ -7,13 +8,14 @@ import { Loan } from '../../loan/loan.model';
 @Component({
   selector: 'app-loan-list',
   standalone: true,
-  imports: [CommonModule, NgForOf, NgIf],
+  imports: [CommonModule, NgForOf, NgIf, FormsModule], // Agrega FormsModule aquí
   templateUrl: './loan-list.component.html',
-  styleUrls: ['./loan-list.component.css'] 
+  styleUrls: ['./loan-list.component.css']
 })
 export class LoanListComponent implements OnInit {
-  loans: Loan[] = []; // Cambiado para almacenar todos los préstamos
-  errorMessage: string = ''; // Para manejar errores si algo falla
+  loans: Loan[] = []; // Almacena todos los préstamos
+  searchQuery: string = ''; // Texto del buscador
+  errorMessage: string = ''; // Manejo de errores
 
   constructor(
     private loanService: LoanService,
@@ -21,18 +23,31 @@ export class LoanListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAllLoans(); // Cambiar a cargar todos los préstamos
+    this.loadAllLoans();
   }
 
   loadAllLoans(): void {
     this.loanService.getAllLoans().subscribe(
       (loans: Loan[]) => {
-        this.loans = loans; // Asignar todos los préstamos
+        this.loans = loans; // Carga todos los préstamos
       },
       (error) => {
         this.errorMessage = 'Error al cargar los préstamos.';
         console.error('Error al cargar los préstamos:', error);
       }
+    );
+  }
+
+  get filteredLoans(): Loan[] {
+    if (!this.searchQuery.trim()) {
+      return this.loans; // Sin filtro, retorna todos los préstamos
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    return this.loans.filter(
+      loan =>
+        loan.fullName.toLowerCase().includes(query) || // Filtra por nombre
+        loan.identifier.toLowerCase().includes(query) // Filtra por DNI
     );
   }
 

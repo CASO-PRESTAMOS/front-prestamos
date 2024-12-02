@@ -20,7 +20,7 @@ export class LoanPreRegistrationComponent {
 
   constructor(private fb: FormBuilder, private loanService: LoanService, private router: Router) {
     this.dniForm = this.fb.group({
-      identifier: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],  // Solo 8 dígitos numéricos
+      identifier: ['', [Validators.required, Validators.pattern(/^\d{8}$|^\d{11}$/)]], // Aceptar 8 o 11 dígitos
     });
   }
 
@@ -29,7 +29,7 @@ export class LoanPreRegistrationComponent {
       this.loanService.createUser(this.dniForm.value).subscribe({
         next: response => {
           console.log('Respuesta del backend:', response); // Agregar log para verificar los datos
-          this.successMessage = 'El DNI es válido.';
+          this.successMessage = 'El DNI/RUC es válido.';
           setTimeout(() => {
             this.router.navigate(['loan/create'], {
               state: { identifier: response.identifier, fullName: response.fullName }
@@ -37,8 +37,8 @@ export class LoanPreRegistrationComponent {
           }, 1500);
         },
         error: err => {
-          if (err.status === 400 && err.error === 'DNI no válido') {
-            this.dniErrorMessage = 'El DNI proporcionado no es válido.';
+          if (err.status === 400 && err.error === 'DNI/RUC no válido') {
+            this.dniErrorMessage = 'El DNI/RUC proporcionado no es válido.';
           } else {
             this.errorMessage = 'Error al registrar el préstamo.';
           }

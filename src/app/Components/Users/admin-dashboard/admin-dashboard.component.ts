@@ -49,48 +49,44 @@ export class AdminDashboardComponent implements OnInit {
   simulatePaymentSchedules(): void {
     this.paymentSchedules = []; // Reiniciar los cronogramas
   
-    // Obtener todos los préstamos activos
     this.allLoans.forEach(loan => {
       this.loanService.getLoanByUserIdentifier(loan.identifier).subscribe({
         next: (loanDetailsArray: LoanDetails[]) => {
           if (loanDetailsArray && loanDetailsArray.length > 0) {
-            // Procesar todos los préstamos del usuario
-            const unpaidOrLatePayments: any[] = [];
-  
             loanDetailsArray.forEach(loanDetails => {
-              // Filtrar pagos "UNPAID" o "LATE" para este préstamo
+              // Filtrar cuotas por estado relevante
               const filteredPayments = loanDetails.paymentScheduleList.filter(
-                payment => payment.status === 'UNPAID' || payment.status === 'LATE'
+                payment =>
+                  payment.status === 'UNPAID' || 
+                  payment.status === 'LATE' || 
+                  loanDetails.status === 'JUDICIAL_DEBT'
               );
   
-              // Añadir pagos pendientes o atrasados a la lista general
-              unpaidOrLatePayments.push(...filteredPayments);
-            });
-  
-            // Ordenar todos los pagos pendientes o atrasados por fecha
-            unpaidOrLatePayments.sort(
-              (a, b) => new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime()
-            );
-  
-            // Tomar el pago más cercano si existe
-            const upcomingPayment = unpaidOrLatePayments[0];
-            if (upcomingPayment) {
-              // Buscar los detalles del préstamo asociado al pago
-              const associatedLoan = loanDetailsArray.find(loan =>
-                loan.paymentScheduleList.some(payment => payment.id === upcomingPayment.id)
+              // Ordenar por fecha
+              filteredPayments.sort(
+                (a, b) => new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime()
               );
   
-              if (associatedLoan) {
+              // Tomar la cuota más cercana
+              const nearestPayment = filteredPayments[0];
+              if (nearestPayment) {
                 this.paymentSchedules.push({
-                  id: upcomingPayment.id, // ID del pago
-                  loan: associatedLoan.user, // Datos del cliente
-                  paymentDueDate: upcomingPayment.paymentDate, // Fecha de pago
-                  installmentAmount: upcomingPayment.amount, // Monto de la cuota
-                  paid: upcomingPayment.status === 'PAID', // Estado del pago
-                  status: upcomingPayment.status // Guardar el estado real del pago
+                  id: nearestPayment.id, // ID de la cuota
+                  loan: loanDetails.user, // Datos del cliente
+                  paymentDueDate: nearestPayment.paymentDate, // Fecha de vencimiento
+                  installmentAmount: nearestPayment.amount, // Monto de la cuota
+                  paid: nearestPayment.status === 'PAID', // Verificar si está pagado
+                  status: loanDetails.status === 'JUDICIAL_DEBT' 
+                    ? 'JUDICIAL_DEBT' 
+                    : nearestPayment.status // Priorizar estado judicial
                 });
               }
-            }
+            });
+  
+            // Mantener ordenado el array general de cuotas por fecha
+            this.paymentSchedules.sort(
+              (a, b) => new Date(a.paymentDueDate).getTime() - new Date(b.paymentDueDate).getTime()
+            );
           }
         },
         error: (error) => {

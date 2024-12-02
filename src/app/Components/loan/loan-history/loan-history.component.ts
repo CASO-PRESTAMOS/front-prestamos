@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoanService } from "../../Services/loan.service";
 import { LoanDetails, PaymentSchedule } from "../../Sechedule/payment-schedule.model";
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-loan-history',
@@ -13,6 +14,7 @@ import { forkJoin } from 'rxjs';
 })
 export class LoanHistoryComponent implements OnInit {
   loans: LoanDetails[] = []; // Almacenará los préstamos detallados con status "PAID"
+  errorMessages: string[] = []; // Para registrar errores individuales
 
   constructor(private loanService: LoanService) {}
 
@@ -21,22 +23,27 @@ export class LoanHistoryComponent implements OnInit {
   }
 
   loadPaidLoans(): void {
-    // Supongamos que tienes un método para obtener todos los identificadores de usuarios
     this.loanService.getAllLoans().subscribe({
       next: (allLoans) => {
         const identifiers = allLoans.map(loan => loan.identifier);
 
-        // Hacer llamadas paralelas a getLoanByUserIdentifier para cada identifier
-        const loanRequests = identifiers.map(identifier => 
-          this.loanService.getLoanByUserIdentifier(identifier)
+        // Crear un array de observables con manejo de errores individuales
+        const loanRequests = identifiers.map(identifier =>
+          this.loanService.getLoanByUserIdentifier(identifier).pipe(
+            catchError(error => {
+              this.errorMessages.push(`Error para el identificador ${identifier}: ${error.message}`);
+              return of([]); // Devolver un array vacío si hay error
+            })
+          )
         );
 
+        // Ejecutar todas las consultas en paralelo
         forkJoin(loanRequests).subscribe({
           next: (allLoanDetails) => {
-            // Combinar resultados y filtrar solo los préstamos completamente pagados
+            // Aplanar resultados y filtrar solo los préstamos completamente pagados
             this.loans = allLoanDetails
-              .flat() // Aplanar el array de arrays
-              .filter((loan: LoanDetails) => 
+              .flat()
+              .filter((loan: LoanDetails) =>
                 loan.paymentScheduleList.every((payment: PaymentSchedule) => payment.status === 'PAID')
               );
           },

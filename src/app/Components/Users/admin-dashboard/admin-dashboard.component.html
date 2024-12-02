@@ -18,29 +18,13 @@
   </div>
 
   <!-- Sección de préstamos recientes -->
-  <div class="mb-10">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-2xl font-bold text-gray-700">Últimos Préstamos</h3>
+  <div class="text-center">
+    <div class="justify-between mb-6">
       <button
         (click)="navigateToAllLoans()"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300"
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300"
       >
         Ver a todos los clientes
-      </button>
-    </div>
-    <div
-      *ngFor="let loan of recentLoans"
-      class="flex items-center justify-between bg-white shadow-lg rounded-lg p-5 mb-4"
-    >
-      <div>
-        <p class="font-medium text-gray-800"><strong>Cliente:</strong> {{ loan.fullName }}</p>
-        <p class="text-gray-600"><strong>DNI/RUC:</strong> {{ loan.identifier }}</p>
-      </div>
-      <button
-        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-        (click)="viewLoanDetails(loan)"
-      >
-        Ver Detalles
       </button>
     </div>
   </div>
@@ -66,23 +50,33 @@
             <td class="border px-4 py-3">{{ schedule.installmentAmount | currency:'S/.' }}</td>
             <td class="border px-4 py-3">
               <span [ngClass]="{
-                'text-red-600 font-semibold': schedule.status === 'LATE',
+                'text-red-600 font-semibold': schedule.status === 'LATE' || schedule.status === 'JUDICIAL_DEBT',
                 'text-yellow-600 font-semibold': schedule.status === 'UNPAID'
               }">
-                {{ schedule.status === 'LATE' ? 'Atrasado' : 'Pendiente' }}
+                {{
+                  schedule.status === 'JUDICIAL_DEBT'
+                    ? 'Estado Judicial'
+                    : schedule.status === 'LATE'
+                      ? 'Atrasado'
+                      : 'Pendiente'
+                }}
               </span>
             </td>
             <td class="border px-4 py-3">
               <button
                 *ngIf="schedule.status !== 'PAID'"
+                [disabled]="schedule.status === 'JUDICIAL_DEBT'"
                 (click)="markAsCompleted(schedule)"
-                class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg transition hover:bg-blue-700"
+                class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg transition"
+                [ngClass]="{
+                  'hover:bg-blue-700': schedule.status !== 'JUDICIAL_DEBT',
+                  'bg-gray-500 cursor-not-allowed': schedule.status === 'JUDICIAL_DEBT'
+                }"
               >
-                Marcar como Pagado
+                {{ schedule.status === 'JUDICIAL_DEBT' ? 'Acción No Permitida' : 'Marcar como Pagado' }}
               </button>
             </td>
           </tr>
-          
         </tbody>
       </table>
     </div>

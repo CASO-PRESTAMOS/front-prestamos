@@ -16,16 +16,18 @@
       <p><strong>Fecha de Fin:</strong> {{ loan.endDate }}</p>
       <strong>Estado:</strong>
       <span [ngClass]="{
-    'text-red-600 font-bold': loan.status === 'LATE',
-    'text-orange-600 font-bold': loan.status === 'UNPAID',
-    'text-green-600 font-bold': loan.status === 'PAID'
+        'text-red-600 font-bold': loan.status === 'LATE' || loan.status === 'JUDICIAL_DEBT',
+        'text-orange-600 font-bold': loan.status === 'UNPAID',
+        'text-green-600 font-bold': loan.status === 'PAID'
       }">
         {{
-        loan.status === 'PAID'
-        ? 'Completado'
-        : loan.status === 'LATE'
-        ? 'Atrasado'
-        : 'Pendiente'
+          loan.status === 'PAID'
+            ? 'Completado'
+            : loan.status === 'LATE'
+              ? 'Atrasado'
+              : loan.status === 'JUDICIAL_DEBT'
+                ? 'Deuda Judicial'
+                : 'Pendiente'
         }}
       </span>
     </div>
@@ -65,9 +67,14 @@
             </td>
             <td *ngIf="!allPaymentsArePaid()" class="border px-4 py-3">
               <button
-                *ngIf="payment.status === 'UNPAID'|| payment.status === 'LATE'"
+                *ngIf="payment.status === 'UNPAID' || payment.status === 'LATE'"
                 (click)="markAsPaid(payment)"
+                [disabled]="loan.status === 'JUDICIAL_DEBT'"
                 class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-lg"
+                [ngClass]="{
+                  'cursor-not-allowed bg-gray-500': loan.status === 'JUDICIAL_DEBT',
+                  'hover:bg-blue-700': loan.status !== 'JUDICIAL_DEBT'
+                }"
               >
                 Marcar como Pagado
               </button>

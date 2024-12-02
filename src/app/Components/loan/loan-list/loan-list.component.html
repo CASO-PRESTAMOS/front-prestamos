@@ -1,38 +1,54 @@
 <div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
-    <div class="mb-10">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-700">Todos los Préstamos</h3>
+  <div class="mb-10">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold text-gray-700">Todos los Préstamos</h3>
+      
+      <!-- Contenedor del buscador -->
+      <div class="flex items-center space-x-2">
+        <span class="text-sm font-medium text-gray-600">Buscar</span>
+        <input
+          type="text"
+          placeholder="Nombre o DNI"
+          [(ngModel)]="searchQuery"
+          class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
-      <!-- Manejo de errores -->
-      <div *ngIf="errorMessage" class="text-red-600 text-center font-bold">
-        {{ errorMessage }}
-      </div>
-      <!-- Lista de préstamos -->
-      <div *ngIf="loans && loans.length > 0; else noLoans">
-        <div *ngFor="let loan of loans" class="flex items-center justify-between bg-white shadow-lg rounded-lg p-5 mb-4">
-          <div>
-            <p class="font-medium text-gray-800"><strong>Cliente:</strong> {{ loan.fullName }}</p>
-            <p class="text-gray-600"><strong>DNI:</strong> {{ loan.identifier }}</p>
-          </div>
-          <button
-            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-            (click)="viewLoanDetails(loan)">
-            Ver Detalles
-          </button>
+    </div>
+
+    <!-- Manejo de errores -->
+    <div *ngIf="errorMessage" class="text-red-600 text-center font-bold">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Lista de préstamos -->
+    <div *ngIf="filteredLoans && filteredLoans.length > 0; else noLoans">
+      <div *ngFor="let loan of filteredLoans" class="flex items-center justify-between bg-white shadow-lg rounded-lg p-5 mb-4">
+        <div>
+          <p class="font-medium text-gray-800"><strong>Cliente:</strong> {{ loan.fullName }}</p>
+          <p class="text-gray-600"><strong>DNI:</strong> {{ loan.identifier }}</p>
         </div>
+        <button
+          class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+          (click)="viewLoanDetails(loan)"
+        >
+          Ver Detalles
+        </button>
       </div>
-      <!-- Mensaje cuando no hay préstamos -->
-      <ng-template #noLoans>
-        <p class="text-center text-gray-500">No se encontraron préstamos disponibles.</p>
-      </ng-template>
     </div>
-  
-    <!-- Botón para volver al Dashboard -->
-    <div class="text-center mt-10">
-      <button
-        (click)="goBack()"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-        Volver al Dashboard
-      </button>
-    </div>
+
+    <!-- Mensaje cuando no hay préstamos -->
+    <ng-template #noLoans>
+      <p class="text-center text-gray-500">No se encontraron préstamos disponibles.</p>
+    </ng-template>
   </div>
+
+  <!-- Botón para volver al Dashboard -->
+  <div class="text-center mt-10">
+    <button
+      (click)="goBack()"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+    >
+      Volver al Dashboard
+    </button>
+  </div>
+</div>
