@@ -13,6 +13,8 @@ import {CommonModule} from "@angular/common";
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  loginMessage: string = '';
+  loginSuccess: boolean = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
@@ -23,9 +25,21 @@ export class LoginComponent {
 
   onLogin() {
     if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe(response => {
-        localStorage.setItem('token', response.token);
-        this.router.navigate(['/admin/dashboard']);  // Redirigir al dashboard
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
+          this.loginSuccess = true;
+          this.loginMessage = 'Inicio de sesión exitoso';
+          localStorage.setItem('token', response.token);
+          // Esperar un poco antes de redirigir para que el usuario pueda ver el mensaje
+          setTimeout(() => {
+            this.router.navigate(['/admin/dashboard']);
+          }, 2000);
+        },
+        error: (error) => {
+          this.loginSuccess = false;
+          this.loginMessage = 'Credenciales incorrectas';
+          console.error('Error de inicio de sesión', error);
+        }
       });
     }
   }

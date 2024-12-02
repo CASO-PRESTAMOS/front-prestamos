@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { LoanService } from '../../Services/loan.service';
 import { AuthService } from '../../Services/auth.service';
 import { Loan } from '../../loan/loan.model';
-import { LoanDetails } from '../../Sechedule/payment-schedule.model';
+import { LoanDetails } from '../../Schedule/payment-schedule.model';
 import {FormsModule} from "@angular/forms";
 
 @Component({
@@ -51,7 +51,7 @@ export class AdminDashboardComponent implements OnInit {
   loadRecentLoans(): void {
     this.loanService.getAllLoans().subscribe(
       (loans: Loan[]) => {
-        this.recentLoans = loans.slice(0, 3); // Mostrar solo los últimos 3 préstamos
+        this.recentLoans = loans.slice(0, 8); // Mostrar solo los últimos 3 préstamos
         this.allLoans = loans;
         this.simulatePaymentSchedules(); // Simular cronogramas basados en los préstamos
       },
@@ -104,6 +104,7 @@ export class AdminDashboardComponent implements OnInit {
                 new Date(a.paymentDueDate).getTime() -
                 new Date(b.paymentDueDate).getTime()
             );
+            this.filterSchedules();
           }
         },
         error: (error) => {
@@ -125,13 +126,12 @@ export class AdminDashboardComponent implements OnInit {
 
     this.loanService.changeState(schedule.id).subscribe({
       next: () => {
-        schedule.paid = true; // Actualiza el estado localmente
+        schedule.paid = true;
         this.successMessage = 'Pago marcado como completado exitosamente.';
-        this.errorMessage = ''; // Limpia el mensaje de error
+        this.errorMessage = '';
 
-        // Esperar 2 segundos y recargar los cronogramas
         setTimeout(() => {
-          this.simulatePaymentSchedules(); // Recargar cronogramas
+          this.simulatePaymentSchedules(); 
         }, 100);
       },
       error: (error) => {
@@ -158,7 +158,7 @@ export class AdminDashboardComponent implements OnInit {
       next: () => {
         this.successMessage = 'Contraseña actualizada con éxito.';
         this.errorMessage = '';
-        this.showPasswordModal = false; // Cierra el modal
+        this.showPasswordModal = false;
       },
       error: (error) => {
         this.errorMessage = 'Error al actualizar la contraseña.';
@@ -168,7 +168,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem(this.passwordModalShownKey); // Reinicia el estado del modal para el próximo inicio de sesión
+    localStorage.removeItem(this.passwordModalShownKey);
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -178,9 +178,15 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   filterSchedules(): void {
-    this.filteredPaymentSchedules = this.paymentSchedules.filter(schedule =>
-      !this.selectedStatus || schedule.status === this.selectedStatus
-    );
+    if (!this.selectedStatus || this.selectedStatus === 'TODOS') {
+      this.filteredPaymentSchedules = this.paymentSchedules.filter(schedule =>
+        schedule.status === 'UNPAID' || schedule.status === 'LATE'
+      );
+    } else {
+      this.filteredPaymentSchedules = this.paymentSchedules.filter(schedule =>
+        schedule.status === this.selectedStatus
+      );
+    }
   }
 
 }

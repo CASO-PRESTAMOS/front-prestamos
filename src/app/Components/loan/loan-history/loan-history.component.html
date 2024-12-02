@@ -1,41 +1,50 @@
-<div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
-  <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">
-    Historial Completo de Préstamos
-  </h2>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-4xl font-extrabold text-center text-indigo-700 mb-8">Historial Completo de Préstamos</h2>
 
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow-md rounded">
-      <thead class="bg-gray-800 text-white">
-        <tr>
-          <th class="py-3 px-6 text-left">Cliente</th>
-          <th class="py-3 px-6 text-left">DNI</th>
-          <th class="py-3 px-6 text-left">Monto</th>
-          <th class="py-3 px-6 text-left">Intereses</th>
-          <th class="py-3 px-6 text-left">Fecha de Inicio</th>
-          <th class="py-3 px-6 text-left">Fecha de Fin</th>
-          <th class="py-3 px-6 text-left">Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let loan of loans" class="border-b hover:bg-gray-100">
-          <td class="py-3 px-6">{{ loan.user.fullName }}</td>
-          <td class="py-3 px-6">{{ loan.user.identifier }}</td>
-          <td class="py-3 px-6">{{ loan.amount }}</td>
-          <td class="py-3 px-6">{{ loan.interestRate * 100 | number:'1.0-2' }} %</td>
-          <td class="py-3 px-6">{{ loan.startDate | date }}</td>
-          <td class="py-3 px-6">{{ loan.endDate | date }}</td>
-          <td class="py-3 px-6 text-green-600 font-bold">Completado</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-indigo-600 text-white">
+            <tr>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Cliente</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">DNI/RUC</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Monto</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Interés</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Fecha de Inicio</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Fecha de Vencimiento</th>
+              <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let loan of loans" class="hover:bg-gray-50 transition duration-300">
+              <td class="py-4 px-6 whitespace-nowrap">{{ loan.user.fullName }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">{{ loan.user.identifier }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">S/. {{ loan.amount | number:'1.2-2' }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">{{ loan.interestRate * 100 | number:'1.2-2' }}%</td>
+              <td class="py-4 px-6 whitespace-nowrap">{{ loan.startDate | date:'dd/MM/yyyy' }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">{{ loan.endDate | date:'dd/MM/yyyy' }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">
+                <span class="px-3 py-1 rounded-full text-sm font-semibold" 
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': loan.status === 'Pagado',
+                        'bg-red-100 text-red-800': loan.status === 'Deuda Judicial',
+                        'bg-yellow-100 text-yellow-800': loan.status === 'En Proceso'
+                      }">
+                  {{ loan.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-  <div class="mt-6 text-center">
-    <button
-      (click)="goBack()"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
-    >
-      Volver al Dashboard
-    </button>
+    <div class="mt-10 text-center">
+      <button (click)="goBack()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Volver al Dashboard
+      </button>
+    </div>
   </div>
 </div>

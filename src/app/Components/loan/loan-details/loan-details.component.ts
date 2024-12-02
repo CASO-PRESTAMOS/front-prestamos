@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoanService } from '../../Services/loan.service';
-import { LoanDetails, PaymentSchedule } from '../../Sechedule/payment-schedule.model';
+import { LoanDetails, PaymentSchedule } from '../../Schedule/payment-schedule.model';
 
 @Component({
   selector: 'app-loan-details',
@@ -97,7 +97,7 @@ export class LoanDetailsComponent implements OnInit {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `loan-details-${this.loan?.id}.pdf`;
+          a.download = `Cronograma-${this.loan?.id}.pdf`;
           a.click();
           window.URL.revokeObjectURL(url);
         },

@@ -25,7 +25,7 @@ export class RegistrationComponent implements OnInit {
     this.loanForm = this.fb.group({
       identifier: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       fullName: ['', Validators.required],
-      amount: ['', Validators.required],
+      amount: ['', [Validators.required, Validators.min(1), Validators.max(5000)]],
       months: ['', [Validators.required, Validators.min(1)]]
     });
   
@@ -58,7 +58,7 @@ export class RegistrationComponent implements OnInit {
           }, 2000); // 3000 ms = 3 segundos
         },
         (error) => {
-          this.errorMessage = 'Error al crear el préstamo.';
+          this.errorMessage = 'Por favor, corrija los errores en el formulario.';
           this.successMessage = null;
           console.error('Error al crear el préstamo:', error);
         }

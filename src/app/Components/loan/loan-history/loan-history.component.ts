@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoanService } from "../../Services/loan.service";
-import { LoanDetails, PaymentSchedule } from "../../Sechedule/payment-schedule.model";
+import { LoanDetails, PaymentSchedule } from "../../Schedule/payment-schedule.model";
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -13,39 +13,40 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./loan-history.component.css']
 })
 export class LoanHistoryComponent implements OnInit {
-  loans: LoanDetails[] = []; // Almacenará los préstamos detallados con status "PAID"
-  errorMessages: string[] = []; // Para registrar errores individuales
+  loans: LoanDetails[] = [];
+  errorMessages: string[] = [];
 
   constructor(private loanService: LoanService) {}
 
   ngOnInit(): void {
-    this.loadPaidLoans();
+    this.loadLoansHistory();
   }
 
-  loadPaidLoans(): void {
+  loadLoansHistory(): void {
     this.loanService.getAllLoans().subscribe({
       next: (allLoans) => {
         const identifiers = allLoans.map(loan => loan.identifier);
 
-        // Crear un array de observables con manejo de errores individuales
         const loanRequests = identifiers.map(identifier =>
           this.loanService.getLoanByUserIdentifier(identifier).pipe(
             catchError(error => {
               this.errorMessages.push(`Error para el identificador ${identifier}: ${error.message}`);
-              return of([]); // Devolver un array vacío si hay error
+              return of([]);
             })
           )
         );
 
-        // Ejecutar todas las consultas en paralelo
         forkJoin(loanRequests).subscribe({
           next: (allLoanDetails) => {
-            // Aplanar resultados y filtrar solo los préstamos completamente pagados
             this.loans = allLoanDetails
               .flat()
               .filter((loan: LoanDetails) =>
-                loan.paymentScheduleList.every((payment: PaymentSchedule) => payment.status === 'PAID')
+                this.isLoanPaidOrJudicial(loan)
               );
+            
+            this.loans.forEach(loan => {
+              loan.status = this.getLoanStatus(loan);
+            });
           },
           error: (error) => {
             console.error('Error al cargar los detalles de los préstamos:', error);
@@ -56,6 +57,24 @@ export class LoanHistoryComponent implements OnInit {
         console.error('Error al obtener identificadores de préstamos:', error);
       }
     });
+  }
+
+  isLoanPaidOrJudicial(loan: LoanDetails): boolean {
+    const isPaid = loan.paymentScheduleList.every((payment: PaymentSchedule) => payment.status === 'PAID');
+    
+    const isJudicialDebt = loan.status === 'JUDICIAL_DEBT';
+
+    return isPaid || isJudicialDebt;
+  }
+
+  getLoanStatus(loan: LoanDetails): string {
+    if (loan.status === 'JUDICIAL_DEBT') {
+      return 'Deuda Judicial';
+    } else if (loan.paymentScheduleList.every((payment: PaymentSchedule) => payment.status === 'PAID')) {
+      return 'Pagado';
+    } else {
+      return 'En Proceso';
+    }
   }
 
   goBack(): void {

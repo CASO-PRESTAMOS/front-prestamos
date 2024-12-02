@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoanService } from "../../Services/loan.service";
-import { LoanDetails } from "../../Sechedule/payment-schedule.model";
+import { LoanDetails } from "../../Schedule/payment-schedule.model";
 
 @Component({
   selector: 'app-loan-view-list',
