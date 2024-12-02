@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {PaymentSchedule } from "../Sechedule/payment-schedule.model";
+import {PaymentSchedule } from "../Schedule/payment-schedule.model";
 import {environment } from "../../enviroment";  // Asegúrate de que la ruta sea correcta
 
 @Injectable({

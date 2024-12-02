@@ -1,114 +1,72 @@
-<div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
-  <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">Detalles del Préstamo</h2>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+    <div class="p-8">
+      <h2 class="text-4xl font-extrabold mb-8 text-center text-indigo-600">Detalles del Préstamo</h2>
 
-  <div *ngIf="loan; else loading">
-    <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
-      <h3 class="text-2xl font-bold text-gray-700 mb-4">Información General</h3>
-      <p><strong>Cliente:</strong> {{ loan.user.fullName }}</p>
-      <p><strong>DNI:</strong> {{ loan.user.identifier }}</p>
-      <p><strong>Monto:</strong> S/ {{ loan.amount }}</p>
-      <p><strong>Plazo:</strong> {{ loan.months }} meses</p>
-      <p>
-        <strong>Tasa de Interés:</strong>
-        {{ loan.interestRate * 100 | number: '1.2-2' }}%
-      </p>
-      <p><strong>Fecha de Inicio:</strong> {{ loan.startDate }}</p>
-      <p><strong>Fecha de Fin:</strong> {{ loan.endDate }}</p>
-      <strong>Estado:</strong>
-      <span [ngClass]="{
-        'text-red-600 font-bold': loan.status === 'LATE' || loan.status === 'JUDICIAL_DEBT',
-        'text-orange-600 font-bold': loan.status === 'UNPAID',
-        'text-green-600 font-bold': loan.status === 'PAID'
-      }">
-        {{
-          loan.status === 'PAID'
-            ? 'Completado'
-            : loan.status === 'LATE'
-              ? 'Atrasado'
-              : loan.status === 'JUDICIAL_DEBT'
-                ? 'Deuda Judicial'
-                : 'Pendiente'
-        }}
-      </span>
+      <div *ngIf="loan; else loading">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6 mb-10">
+          <h3 class="text-2xl font-bold text-indigo-800 mb-6">Información General</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col space-y-2">
+              <p class="text-indigo-700"><span class="font-semibold">Cliente:</span> {{ loan.user.fullName }}</p>
+              <p class="text-indigo-700"><span class="font-semibold">DNI:</span> {{ loan.user.identifier }}</p>
+              <p class="text-indigo-700"><span class="font-semibold">Monto:</span> <span class="text-lg font-bold"> S/
+                  {{ loan.amount | number:'1.2-2' }}</span></p>
+              <p class="text-indigo-700"><span class="font-semibold">Plazo:</span> {{ loan.months }} meses</p>
+            </div>
+            <div class="flex flex-col space-y-2">
+              <p class="text-indigo-700">
+                <span class="font-semibold">Tasa de Interés: </span>
+                <span class="text-lg font-bold">{{ loan.interestRate * 100 | number: '1.2-2' }}%</span>
+              </p>
+              <p class="text-indigo-700"><span class="font-semibold">Fecha de Inicio:</span> {{ loan.startDate |
+                date:'mediumDate' }}</p>
+              <p class="text-indigo-700"><span class="font-semibold">Fecha de Fin:</span> {{ loan.endDate |
+                date:'mediumDate' }}</p>
+              <p class="text-indigo-700">
+                <span class="font-semibold">Estado:</span>
+                <span class="px-2 py-1 rounded-full text-sm font-semibold" [ngClass]="{
+                    'bg-red-100 text-red-800': loan.status === 'LATE' || loan.status === 'JUDICIAL_DEBT',
+                    'bg-yellow-100 text-yellow-800': loan.status === 'UNPAID',
+                    'bg-green-100 text-green-800': loan.status === 'PAID'
+                  }">
+                  {{
+                  loan.status === 'PAID'
+                  ? 'Completado'
+                  : loan.status === 'LATE'
+                  ? 'Atrasado'
+                  : loan.status === 'JUDICIAL_DEBT'
+                  ? 'Deuda Judicial'
+                  : 'Pendiente'
+                  }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resto del contenido (tabla de pagos, etc.) -->
+      </div>
+
+      <ng-template #loading>
+        <div class="text-center py-10">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+          <p class="mt-4 text-indigo-600 font-semibold">Cargando detalles del préstamo...</p>
+        </div>
+      </ng-template>
+
+      <!-- Botones de acción -->
+      <div class="flex justify-center space-x-4 mt-10">
+        <button (click)="goBack()"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Regresar al Panel
+        </button>
+
+        <button (click)="generatePdf()" [disabled]="loan?.status !== 'PAID'"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500 disabled:hover:scale-100">
+          Generar PDF
+        </button>
+      </div>
     </div>
-
-
-    <div class="overflow-x-auto w-full max-w-4xl mx-auto">
-      <table class="table-auto min-w-full bg-white shadow-lg rounded-lg">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="px-4 py-3 text-left">Fecha</th>
-            <th class="px-4 py-3 text-left">Monto</th>
-            <th class="px-4 py-3 text-left">Estado</th>
-            <!-- Ocultar la columna de acción si todos los pagos están "PAID" -->
-            <th *ngIf="!allPaymentsArePaid()" class="px-4 py-3 text-left"></th>
-            <th class="px-4 py-3 text-left">Generar comprobante</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let payment of loan?.paymentScheduleList" class="hover:bg-gray-100 transition">
-            <td class="border px-4 py-3">{{ payment.paymentDate }}</td>
-            <td class="border px-4 py-3">{{ payment.amount | currency: 'S/.' }}</td>
-            <td class="border px-4 py-3">
-              <span
-                [ngClass]="{
-                  'text-red-600 font-bold': payment.status === 'LATE',
-                  'text-orange-600 font-bold': payment.status === 'UNPAID',
-                  'text-green-600 font-bold': payment.status === 'PAID'
-                }"
-              >
-                {{
-                  payment.status === 'PAID'
-                    ? 'Pagado'
-                    : payment.status === 'LATE'
-                      ? 'Atrasado'
-                      : 'Pendiente'
-                }}
-              </span>
-            </td>
-            <td *ngIf="!allPaymentsArePaid()" class="border px-4 py-3">
-              <button
-                *ngIf="payment.status !== 'PAID'"
-                (click)="markAsPaid(payment)"
-                [disabled]="loan.status === 'JUDICIAL_DEBT'"
-                class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-lg"
-                [ngClass]="{
-      'cursor-not-allowed bg-gray-500': loan.status === 'JUDICIAL_DEBT',
-      'hover:bg-blue-700': loan.status !== 'JUDICIAL_DEBT'
-    }"
-              >
-                Marcar como Pagado
-              </button>
-            </td>
-            <td class="border px-4 py-3">
-              <button
-                (click)="generateBoleta(payment)"
-                class="bg-purple-500 hover:bg-purple-700 text-white py-2 px-4 rounded-lg shadow-lg"
-              >
-                Generar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <ng-template #loading>
-    <p class="text-center text-gray-500">Cargando detalles del préstamo...</p>
-  </ng-template>
-
-  <div class="text-center mt-10">
-    <button (click)="goBack()"
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg">
-      Regresar al Panel
-    </button>
-
-    <button
-      (click)="generatePdf()"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
-    >
-      Generar PDF
-    </button>
   </div>
 </div>

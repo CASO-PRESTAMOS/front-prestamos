@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders , HttpParams} from "@angular/common/http";
 import { environment } from '../../enviroment';
 import { Loan } from "../loan/loan.model";
-import { LoanDetails } from '../Sechedule/payment-schedule.model';
+import { LoanDetails } from '../Schedule/payment-schedule.model';
 import { AuthService } from "./auth.service";  // Asegúrate de importar AuthService o donde se gestione el token
 
 @Injectable({

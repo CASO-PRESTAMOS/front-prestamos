@@ -47,7 +47,7 @@ export class LoanListComponent implements OnInit {
     return this.loans.filter(
       loan =>
         loan.fullName.toLowerCase().includes(query) || // Filtra por nombre
-        loan.identifier.toLowerCase().includes(query) // Filtra por DNI
+        loan.identifier.toLowerCase().includes(query) // Filtra por DNI/RUC
     );
   }
 
