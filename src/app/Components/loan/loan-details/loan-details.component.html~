@@ -41,7 +41,7 @@
             <th class="px-4 py-3 text-left">Monto</th>
             <th class="px-4 py-3 text-left">Estado</th>
             <!-- Ocultar la columna de acción si todos los pagos están "PAID" -->
-            <th *ngIf="!allPaymentsArePaid()" class="px-4 py-3 text-left"></th>
+            <th *ngIf="!allPaymentsArePaid()" class="px-4 py-3 text-left">Acción</th>
             <th class="px-4 py-3 text-left">Generar comprobante</th>
           </tr>
         </thead>
