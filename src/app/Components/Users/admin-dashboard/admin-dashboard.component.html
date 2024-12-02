@@ -1,76 +1,146 @@
-<div class="container mx-auto my-8 p-4">
-  <h2 class="text-3xl font-bold mb-6 text-center">Bienvenido Administrador</h2>
+<div class="container mx-auto my-8 p-6 bg-gray-100 shadow-lg rounded-lg">
+  <h2 class="text-4xl font-extrabold mb-8 text-center text-blue-600">Bienvenido Administrador</h2>
+
+  <!-- Botón de cerrar sesión -->
+  <div class="text-right mb-4">
+    <button
+      (click)="logout()"
+      class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg"
+    >
+      Cerrar Sesión
+    </button>
+  </div>
+
+  <!-- Modal para cambiar contraseña -->
+  <div
+    *ngIf="showPasswordModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h3 class="text-xl font-semibold mb-4">Cambiar Contraseña</h3>
+      <label for="password" class="block text-gray-700 font-bold mb-2">Nueva Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        [(ngModel)]="newPassword"
+        class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Escribe tu nueva contraseña"
+      />
+      <div class="flex justify-between mt-4">
+        <button
+          (click)="updatePassword()"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+        >
+          Actualizar
+        </button>
+        <button
+          (click)="closeModal()"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg"
+        >
+          Cancelar
+        </button>
+      </div>
+      <div *ngIf="errorMessage" class="text-red-600 mt-4">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="text-green-600 mt-4">{{ successMessage }}</div>
+    </div>
+  </div>
 
   <!-- Sección de botones -->
-  <div class="flex justify-around mb-8">
+  <div class="flex flex-col sm:flex-row justify-center sm:justify-around gap-4 mb-10">
     <button
       (click)="navigateToLoanRegistration()"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition hover:scale-105 duration-300"
     >
       Registrar Nuevo Préstamo
+    </button>
+    <button
+      (click)="navigateToLoanHistory()"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition hover:scale-105 duration-300"
+    >
+      Ver Historial Completo
+    </button>
+    <button
+      (click)="navigateToAllLoans()"
+      class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition hover:scale-105 duration-300"
+    >
+      Ver Todos los Clientes
     </button>
   </div>
 
   <!-- Mensajes de éxito o error -->
   <div class="text-center">
-    <p *ngIf="successMessage" class="text-green-500 text-center mb-4">{{ successMessage }}</p>
-    <p *ngIf="errorMessage" class="text-red-500 text-center mb-4">{{ errorMessage }}</p>
+    <p *ngIf="successMessage" class="text-green-600 font-semibold mb-4">{{ successMessage }}</p>
+    <p *ngIf="errorMessage" class="text-red-600 font-semibold mb-4">{{ errorMessage }}</p>
   </div>
 
-  <!-- Sección de préstamos recientes -->
-  <div class="mb-8">
-    <h3 class="text-xl font-semibold mb-4">Últimos Préstamos</h3>
-    <div *ngFor="let loan of recentLoans" class="p-4 bg-white shadow rounded mb-4">
-      <p><strong>Cliente:</strong> {{ loan.clientName }}</p>
-      <p><strong>Monto:</strong> {{ loan.amount }}</p>
-      <p><strong>Fecha de inicio:</strong> {{ loan.startDate | date: 'mediumDate' }}</p>
-    </div>
+  <!-- Filtro por estado -->
+  <div class="flex justify-between items-center mb-4">
+    <label for="statusFilter" class="text-gray-700 font-semibold">Filtrar por estado:</label>
+    <select
+      id="statusFilter"
+      [(ngModel)]="selectedStatus"
+      (change)="filterSchedules()"
+      class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Todos</option>
+      <option value="UNPAID">Pendiente</option>
+      <option value="LATE">Atrasado</option>
+    </select>
   </div>
 
   <!-- Sección de cronograma de pagos -->
-  <div class="mb-8">
-    <h3 class="text-xl font-semibold mb-4">Cronograma de Pagos Simulado</h3>
-    <table class="min-w-full bg-white">
-      <thead>
-      <tr>
-        <th class="px-4 py-2">Cliente</th>
-        <th class="px-4 py-2">Fecha de Pago</th>
-        <th class="px-4 py-2">Monto</th>
-        <th class="px-4 py-2">Estado</th>
-        <th class="px-4 py-2">Acción</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let schedule of paymentSchedules">
-        <td class="border px-4 py-2">{{ schedule.loan.clientName }}</td>
-        <td class="border px-4 py-2">{{ schedule.paymentDueDate | date }}</td>
-        <td class="border px-4 py-2">{{ schedule.installmentAmount | currency }}</td>
-        <td class="border px-4 py-2">
-          <span [ngClass]="schedule.paid ? 'text-green-500' : 'text-red-500'">
-            {{ schedule.paid ? 'Pagado' : 'Pendiente' }}
-          </span>
-        </td>
-        <td class="border px-4 py-2">
-          <button
-            *ngIf="!schedule.paid"
-            (click)="markAsCompleted(schedule)"
-            class="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Marcar como Pagado
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Botón para ver historial completo -->
-  <div class="text-center">
-    <button
-      (click)="navigateToLoanHistory()"
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
-    >
-      Ver Historial Completo
-    </button>
+  <div class="mb-10">
+    <h3 class="text-2xl font-bold text-gray-700 mb-6">Cronograma de Pagos</h3>
+    <div class="overflow-x-auto">
+      <table class="table-auto min-w-full bg-white shadow-lg rounded-lg">
+        <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Cliente</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha de Pago</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Monto</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Estado</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let schedule of filteredPaymentSchedules" class="hover:bg-gray-100 transition">
+          <td class="border px-4 py-3">{{ schedule.loan.fullName }}</td>
+          <td class="border px-4 py-3">{{ schedule.paymentDueDate | date }}</td>
+          <td class="border px-4 py-3">{{ schedule.installmentAmount | currency:'S/.' }}</td>
+          <td class="border px-4 py-3">
+              <span [ngClass]="{
+                'text-red-600 font-semibold': schedule.status === 'LATE' || schedule.status === 'JUDICIAL_DEBT',
+                'text-yellow-600 font-semibold': schedule.status === 'UNPAID',
+                'text-green-600 font-semibold': schedule.status === 'PAID'
+              }">
+                {{
+                  schedule.status === 'JUDICIAL_DEBT'
+                    ? 'Estado Judicial'
+                    : schedule.status === 'LATE'
+                      ? 'Atrasado'
+                      : schedule.status === 'UNPAID'
+                        ? 'Pendiente'
+                        : 'Pagado'
+                }}
+              </span>
+          </td>
+          <td class="border px-4 py-3">
+            <button
+              *ngIf="schedule.status !== 'PAID'"
+              [disabled]="schedule.status === 'JUDICIAL_DEBT'"
+              (click)="markAsCompleted(schedule)"
+              class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg transition"
+              [ngClass]="{
+                  'hover:bg-blue-700': schedule.status !== 'JUDICIAL_DEBT',
+                  'bg-gray-500 cursor-not-allowed': schedule.status === 'JUDICIAL_DEBT'
+                }"
+            >
+              {{ schedule.status === 'JUDICIAL_DEBT' ? 'Acción No Permitida' : 'Marcar como Pagado' }}
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

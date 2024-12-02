@@ -1,0 +1,30 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <h2 class="text-xl font-bold mb-6 text-center">Ingrese un DNI válido</h2>
+    <form [formGroup]="dniForm" (ngSubmit)="onSubmit()">
+
+      <label class="block mb-2 text-sm font-medium text-gray-700">DNI/RUC</label>
+      <input formControlName="identifier" class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg" placeholder="DNI">
+      <div *ngIf="dniForm.get('identifier')?.touched && dniForm.get('identifier')?.invalid">
+        <small *ngIf="dniForm.get('identifier')?.errors?.['required']" class="text-red-500">El DNI/RUC es requerido.</small>
+        <small *ngIf="dniForm.get('identifier')?.errors?.['pattern']" class="text-red-500">
+          El DNI debe contener exactamente 8 dígitos o el RUC 11 dígitos.
+        </small>
+      </div>
+      <div *ngIf="dniErrorMessage" class="text-red-500">
+        {{ dniErrorMessage }}
+      </div>
+
+      <div *ngIf="errorMessage" class="text-red-500 mb-4">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="text-green-500 mt-4 text-center">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" [disabled]="dniForm.invalid" class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-700">Crear Préstamo</button>
+      <button type="button" (click)="cancelRegistration()" class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-700 mt-2">Cancelar</button>
+    </form>
+  </div>
+</div>
